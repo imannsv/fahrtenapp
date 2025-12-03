@@ -56,18 +56,22 @@
             margin-top: 2px;
         }
 
-        .theme-toggle {
+        /* Zahnrad */
+        .settings-btn {
             border: none;
-            background: rgba(15,23,42,0.04);
+            background: rgba(15,23,42,0.05);
             border-radius: 999px;
-            padding: 4px 9px;
-            font-size: 16px;
+            padding: 6px 10px;
+            font-size: 18px;
             cursor: pointer;
             line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-            .theme-toggle:active {
-                transform: translateY(1px);
+            .settings-btn:active {
+                transform: scale(0.95);
             }
 
         .section-title {
@@ -338,6 +342,100 @@
             font-variant-numeric: tabular-nums;
         }
 
+        /* Einstellungen-Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .settings-card {
+            position: relative;
+            background: #ffffff;
+            padding: 16px 16px 12px;
+            border-radius: 18px;
+            width: 82%;
+            max-width: 340px;
+            box-shadow: 0 18px 35px rgba(15,23,42,0.45);
+            animation: settingsSlideUp 0.18s ease-out;
+        }
+
+            .settings-card h3 {
+                margin: 0 0 10px;
+                font-size: 16px;
+                font-weight: 700;
+                color: #111827;
+            }
+
+        .settings-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0 4px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .settings-toggle {
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 60px;
+        }
+
+        .close-settings {
+            width: 100%;
+            padding: 6px 0;
+            margin-top: 10px;
+            border-radius: 999px;
+            border: none;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            .close-settings:active {
+                transform: scale(0.97);
+            }
+
+        .settings-close-x {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 2px 4px;
+        }
+
+            .settings-close-x:active {
+                transform: scale(0.9);
+            }
+
+        @keyframes settingsSlideUp {
+            from {
+                transform: translateY(18px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         /* Dark-Mode */
         .dark body {
             background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
@@ -386,9 +484,27 @@
             color: #e5e7eb;
         }
 
-        .dark .theme-toggle {
-            background: rgba(148,163,184,0.25);
+        .dark .settings-card {
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+            .dark .settings-card h3 {
+                color: #e5e7eb;
+            }
+
+        .dark .settings-group {
             color: #e5e7eb;
+        }
+
+        .dark .settings-toggle {
+            background: #020617;
+            border-color: #475569;
+            color: #e5e7eb;
+        }
+
+        .dark .settings-close-x {
+            color: #9ca3af;
         }
 
         .dark .btn-outline {
@@ -413,7 +529,7 @@
         <div class="header">
             <div class="header-top">
                 <div class="title">Fahrten & Stunden</div>
-                <button class="theme-toggle" id="themeToggle" type="button">🌙</button>
+                <button class="settings-btn" id="openSettings" type="button">⚙️</button>
             </div>
             <div class="subtitle">
                 Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.
@@ -541,6 +657,21 @@
         </div>
     </div>
 
+    <!-- Einstellungen-Popup -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-card">
+            <button class="settings-close-x" id="closeSettingsX" type="button">×</button>
+            <h3>Einstellungen</h3>
+
+            <div class="settings-group">
+                <span>Dark Mode</span>
+                <button id="themeToggle" class="settings-toggle" type="button">🌙</button>
+            </div>
+
+            <button id="closeSettings" class="close-settings" type="button">Fertig</button>
+        </div>
+    </div>
+
     <!-- jsPDF (optional, nur für PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
@@ -551,6 +682,10 @@
 
         let fahrten = [];
 
+        const openSettings = document.getElementById('openSettings');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsBtn = document.getElementById('closeSettings');
+        const closeSettingsX = document.getElementById('closeSettingsX');
         const themeToggleBtn = document.getElementById('themeToggle');
 
         const adresseInput = document.getElementById('adresse');
@@ -588,7 +723,9 @@
         function applyTheme(theme) {
             const isDark = theme === 'dark';
             document.documentElement.classList.toggle('dark', isDark);
-            themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+            if (themeToggleBtn) {
+                themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+            }
             try {
                 localStorage.setItem(THEME_KEY, theme);
             } catch (e) { /* ignore */ }
@@ -605,9 +742,27 @@
             applyTheme(theme);
         }
 
-        themeToggleBtn.addEventListener('click', () => {
-            const isDark = document.documentElement.classList.contains('dark');
-            applyTheme(isDark ? 'light' : 'dark');
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                applyTheme(isDark ? 'light' : 'dark');
+            });
+        }
+
+        // Settings-Modal öffnen/schließen
+        openSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+
+        function closeSettingsModal() {
+            settingsModal.style.display = 'none';
+        }
+
+        closeSettingsBtn.addEventListener('click', closeSettingsModal);
+        closeSettingsX.addEventListener('click', closeSettingsModal);
+
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeSettingsModal();
         });
 
         function loadState() {
