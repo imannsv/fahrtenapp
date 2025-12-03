@@ -182,21 +182,6 @@
                 padding: 6px 8px;
             }
 
-        .quick-btn {
-            margin-top: 6px;
-            width: 100%;
-            font-size: 12px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            border: 1px dashed #9ca3af;
-            background: #f9fafb;
-            color: #4b5563;
-        }
-
-            .quick-btn:active {
-                transform: translateY(1px);
-            }
-
         .btn-small {
             border-radius: 999px;
             border: 1px solid #d1d5db;
@@ -406,12 +391,6 @@
             color: #e5e7eb;
         }
 
-        .dark .quick-btn {
-            background: #020617;
-            border-color: #4b5563;
-            color: #e5e7eb;
-        }
-
         .dark .btn-outline {
             background: transparent;
         }
@@ -480,9 +459,6 @@
             </label>
 
             <button class="btn btn-primary" id="addFahrtBtn">Fahrt hinzufügen</button>
-            <button class="quick-btn" id="quickOnlineBtn" type="button">
-                + Online-Fahrt unter 5 km
-            </button>
         </div>
 
         <!-- Erfasste Fahrten -->
@@ -583,7 +559,6 @@
         const entfernungInput = document.getElementById('entfernung');
         const extra8kmInput = document.getElementById('extra8km');
         const addFahrtBtn = document.getElementById('addFahrtBtn');
-        const quickOnlineBtn = document.getElementById('quickOnlineBtn');
         const fahrtenListe = document.getElementById('fahrtenListe');
 
         const stundenInput = document.getElementById('stunden');
@@ -755,22 +730,6 @@
             extra8kmInput.disabled = true;
             if (zahlungsart === 'bar') bargeldInput.value = '';
 
-            renderFahrten();
-            berechneZusammenfassung();
-            saveState();
-        });
-
-        // Schnell-Button: Online-Fahrt < 5 km, kein Zuschlag
-        quickOnlineBtn.addEventListener('click', () => {
-            fahrten.push({
-                adresse: 'Online-Bestellung',
-                zahlungsart: 'online',
-                bargeld: 0,
-                dist: 0,
-                extraBonus: 0,
-                trinkgeld: 0,
-                vergütung: BASIS_PRO_FAhrt
-            });
             renderFahrten();
             berechneZusammenfassung();
             saveState();
@@ -981,12 +940,15 @@
                 pillZ.textContent = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 left.appendChild(pillZ);
 
+                // Immer eine Distanz-Pill:
+                const pillD = document.createElement('span');
+                pillD.className = 'pill pill-distance';
                 if (typeof f.dist === 'number' && f.dist > 0) {
-                    const pillD = document.createElement('span');
-                    pillD.className = 'pill pill-distance';
                     pillD.textContent = f.dist.toFixed(1) + ' km';
-                    left.appendChild(pillD);
+                } else {
+                    pillD.textContent = '< 5 km';
                 }
+                left.appendChild(pillD);
 
                 if (f.extraBonus > 0) {
                     const extraSpan = document.createElement('span');
@@ -1148,7 +1110,7 @@
                 `Stundenlohn: ${stundenlohn.toFixed(2)} €`,
                 `Lohn Stunden: ${lohnStunden.toFixed(2)} €`,
                 `Vergütung Fahrten: ${summeFahrtenVergütung.toFixed(2)} €`,
-                `Summe Bargeld: ${summeBargeld.toFixed(2)} €`,
+                `Summe Bargeld: ${summeBargeld.toFixed(2)} €`
             ];
 
             doc.setTextColor(colorGray.r, colorGray.g, colorGray.b);
@@ -1236,7 +1198,7 @@
 
                 const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
-                const distStr = (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1) + ' km' : '-';
+                const distStr = (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1) + ' km' : '< 5 km';
                 const extraStr = f.extraBonus > 0 ? '+' + f.extraBonus.toFixed(2) + ' €' : '-';
                 const verg = f.vergütung.toFixed(2) + ' €';
 
@@ -1283,7 +1245,6 @@
         loadState();
         renderFahrten();
         berechneZusammenfassung();
-        // Standard: Online = Adresse + Bargeld gesperrt
         zahlungsartSelect.dispatchEvent(new Event('change'));
     </script>
 </body>
