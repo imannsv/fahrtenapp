@@ -668,8 +668,10 @@
                 <button id="themeToggle" class="settings-toggle" type="button">🌙</button>
             </div>
 
+            <button id="appUpdate" class="close-settings" type="button">App Update</button>
             <button id="closeSettings" class="close-settings" type="button">Fertig</button>
         </div>
+
     </div>
 
     <!-- jsPDF (optional, nur für PDF) -->
@@ -687,6 +689,8 @@
         const closeSettingsBtn = document.getElementById('closeSettings');
         const closeSettingsX = document.getElementById('closeSettingsX');
         const themeToggleBtn = document.getElementById('themeToggle');
+        const appUpdateBtn = document.getElementById('appUpdate');
+
 
         const adresseInput = document.getElementById('adresse');
         const zahlungsartSelect = document.getElementById('zahlungsart');
@@ -764,6 +768,12 @@
         settingsModal.addEventListener('click', (e) => {
             if (e.target === settingsModal) closeSettingsModal();
         });
+
+        appUpdateBtn.addEventListener('click', () => {
+            // Seite neu laden, immer vom Server (nicht aus Cache)
+            location.reload(true);
+        });
+
 
         function loadState() {
             try {
