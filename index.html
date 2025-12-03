@@ -98,6 +98,11 @@
             margin-top: 6px;
         }
 
+            label span {
+                display: inline-block;
+                margin-bottom: 2px;
+            }
+
         input, select {
             width: 100%;
             box-sizing: border-box;
@@ -379,7 +384,12 @@
             margin: 8px 0 4px;
             font-size: 14px;
             color: #374151;
+            gap: 8px;
         }
+
+            .settings-group span {
+                flex: 1;
+            }
 
         .settings-toggle {
             padding: 4px 12px;
@@ -389,6 +399,10 @@
             cursor: pointer;
             font-size: 14px;
             min-width: 60px;
+        }
+
+        #languageSelect {
+            max-width: 140px;
         }
 
         .close-settings {
@@ -435,7 +449,6 @@
                 opacity: 1;
             }
         }
-
 
         /* Dark-Mode */
         .dark body {
@@ -529,19 +542,19 @@
     <div class="app">
         <div class="header">
             <div class="header-top">
-                <div class="title">Fahrten & Stunden</div>
+                <div class="title" id="titleText">Fahrten &amp; Stunden</div>
                 <button class="settings-btn" id="openSettings" type="button">⚙️</button>
             </div>
-            <div class="subtitle">
+            <div class="subtitle" id="subtitleText">
                 Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.
             </div>
         </div>
 
         <!-- Neue Fahrt -->
-        <div class="section-title">Neue Fahrt</div>
+        <div class="section-title" id="sectionNewTripText">Neue Fahrt</div>
         <div class="card">
             <label>
-                Zahlungsart
+                <span id="labelPaymentText">Zahlungsart</span>
                 <select id="zahlungsart">
                     <option value="online">Online</option>
                     <option value="bar">Bar</option>
@@ -549,55 +562,55 @@
             </label>
 
             <label>
-                Adresse
+                <span id="labelAddressText">Adresse</span>
                 <input type="text" id="adresse"
                        placeholder="bei Online nicht nötig">
             </label>
 
             <label>
-                Bargeldbetrag (€)
+                <span id="labelCashText">Bargeldbetrag (€)</span>
                 <input type="number" id="bargeld" step="0.01" min="0"
                        inputmode="decimal"
                        placeholder="nur bei Barzahlung" disabled>
             </label>
 
             <label>
-                Entfernung (km)
+                <span id="labelDistanceText">Entfernung (km)</span>
                 <input type="number" id="entfernung" step="0.1" min="0"
                        inputmode="decimal"
                        placeholder="leer = unter 5 km">
             </label>
 
             <label>
-                Zuschlag ab 8 km (€)
+                <span id="labelExtra8Text">Zuschlag ab 8 km (€)</span>
                 <input type="number" id="extra8km" step="0.01" min="0"
                        inputmode="decimal"
                        placeholder="nur bei Entfernungen ≥ 8 km" disabled>
             </label>
 
-            <button class="btn btn-primary" id="addFahrtBtn">Fahrt hinzufügen</button>
+            <button class="btn btn-primary" id="addFahrtBtn"><span id="btnAddTripText">Fahrt hinzufügen</span></button>
         </div>
 
         <!-- Erfasste Fahrten -->
-        <div class="section-title">Erfasste Fahrten</div>
+        <div class="section-title" id="sectionTripsText">Erfasste Fahrten</div>
         <div class="card">
             <ul id="fahrtenListe" class="fahrten-list">
-                <li class="placeholder">Noch keine Fahrten erfasst.</li>
+                <li class="placeholder" id="placeholderText">Noch keine Fahrten erfasst.</li>
             </ul>
         </div>
 
         <!-- Abrechnung -->
-        <div class="section-title">Abrechnung</div>
+        <div class="section-title" id="sectionSummaryText">Abrechnung</div>
         <div class="card">
             <label>
-                Stunden gearbeitet
+                <span id="labelHoursText">Stunden gearbeitet</span>
                 <input type="number" id="stunden" step="0.25" min="0"
                        inputmode="decimal"
                        value="0">
             </label>
 
             <label>
-                Stundenlohn (€)
+                <span id="labelHourlyWageText">Stundenlohn (€)</span>
                 <input type="number" id="stundenlohn" step="0.01" min="0"
                        inputmode="decimal"
                        value="7.5">
@@ -605,55 +618,55 @@
 
             <div style="margin-top:8px;">
                 <div class="summary-row">
-                    <div class="summary-label">Anzahl Fahrten</div>
+                    <div class="summary-label" id="summaryTripsLabelText">Anzahl Fahrten</div>
                     <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Fahrten mit Zuschlag (ab 5 km)</div>
+                    <div class="summary-label" id="summaryTripsOver5LabelText">Fahrten mit Zuschlag (ab 5 km)</div>
                     <div class="summary-value" id="anzahlÜber5">0</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Summe Bargeld</div>
+                    <div class="summary-label" id="summaryCashLabelText">Summe Bargeld</div>
                     <div class="summary-value money" id="summeBargeld">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Summe Trinkgeld (Info)</div>
+                    <div class="summary-label" id="summaryTipsLabelText">Summe Trinkgeld (Info)</div>
                     <div class="summary-value money" id="summeTrinkgeld">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Erfasste Kilometer</div>
+                    <div class="summary-label" id="summaryKmLabelText">Erfasste Kilometer</div>
                     <div class="summary-value" id="summeKm">0,0 km</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Lohn Stunden</div>
+                    <div class="summary-label" id="summaryHoursWageLabelText">Lohn Stunden</div>
                     <div class="summary-value money" id="lohnStunden">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Vergütung Fahrten</div>
+                    <div class="summary-label" id="summaryTripsWageLabelText">Vergütung Fahrten</div>
                     <div class="summary-value money" id="lohnFahrten">0,00 €</div>
                 </div>
                 <hr>
                 <div class="summary-row">
-                    <div class="summary-label">Gesamt (Stunden + Fahrten)</div>
+                    <div class="summary-label" id="summaryTotalLabelText">Gesamt (Stunden + Fahrten)</div>
                     <div class="summary-value money summary-value-strong" id="gesamtBrutto">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Noch auszuzahlen (− Bargeld)</div>
+                    <div class="summary-label" id="summaryNetLabelText">Noch auszuzahlen (− Bargeld)</div>
                     <div class="summary-value money summary-value-strong summary-green" id="nettoAuszahlung">0,00 €</div>
                 </div>
             </div>
 
-            <div class="info-note">
+            <div class="info-note" id="infoNoteText">
                 * Trinkgeld wird nicht von der Auszahlung abgezogen und nicht im PDF aufgeführt.
             </div>
 
             <div class="btn-row">
-                <button class="btn btn-ghost" id="resetBtn">Alles zurücksetzen</button>
-                <button class="btn btn-outline" id="exportPdfBtn">Als PDF exportieren</button>
+                <button class="btn btn-ghost" id="resetBtn"><span id="btnResetText">Alles zurücksetzen</span></button>
+                <button class="btn btn-outline" id="exportPdfBtn"><span id="btnExportText">Als PDF exportieren</span></button>
             </div>
         </div>
 
-        <div class="footer-note">
+        <div class="footer-note" id="footerNoteText">
             Basis: 1,50 € pro Fahrt · Zuschläge: ab 5 km +0,50 €, ab 7 km +1 €, ab 7,5 km +1,50 €, ab 8 km manueller Betrag
         </div>
     </div>
@@ -662,36 +675,229 @@
     <div class="settings-modal" id="settingsModal">
         <div class="settings-card">
             <button class="settings-close-x" id="closeSettingsX" type="button">×</button>
-            <h3>Einstellungen</h3>
+            <h3 id="settingsTitleText">Einstellungen</h3>
 
             <div class="settings-group">
-                <span>Dark Mode</span>
+                <span id="settingsLanguageText">Sprache</span>
+                <select id="languageSelect">
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="ru">Русский</option>
+                </select>
+            </div>
+
+            <div class="settings-group">
+                <span id="settingsDarkModeText">Dark Mode</span>
                 <button id="themeToggle" class="settings-toggle" type="button">🌙</button>
             </div>
 
-            <button id="appUpdate" class="close-settings" type="button">App Update</button>
-            <button id="closeSettings" class="close-settings" type="button">Fertig</button>
+            <button id="appUpdate" class="close-settings" type="button">
+                <span id="appUpdateText">App Update</span>
+            </button>
+            <button id="closeSettings" class="close-settings" type="button">
+                <span id="closeSettingsText">Fertig</span>
+            </button>
         </div>
-
     </div>
 
-    <!-- jsPDF (optional, nur für PDF) -->
+    <!-- jsPDF (nur für PDF) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
     <script>
         const BASIS_PRO_FAhrt = 1.5;
         const STORAGE_KEY = 'fahrtenApp_v4';
         const THEME_KEY = 'fahrtenApp_theme';
+        const LANG_KEY = 'fahrtenApp_lang';
 
+        const translations = {
+            de: {
+                title: 'Fahrten & Stunden',
+                subtitle: 'Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.',
+                sectionNewTrip: 'Neue Fahrt',
+                sectionTrips: 'Erfasste Fahrten',
+                sectionSummary: 'Abrechnung',
+                labelPayment: 'Zahlungsart',
+                labelAddress: 'Adresse',
+                labelCash: 'Bargeldbetrag (€)',
+                labelDistance: 'Entfernung (km)',
+                labelExtra8: 'Zuschlag ab 8 km (€)',
+                labelHours: 'Stunden gearbeitet',
+                labelHourlyWage: 'Stundenlohn (€)',
+                addressPlaceholderOnline: 'bei Online nicht nötig',
+                addressPlaceholderBar: 'z.B. Musterstraße 1, Hannover',
+                cashPlaceholder: 'nur bei Barzahlung',
+                distancePlaceholder: 'leer = unter 5 km',
+                extra8Placeholder: 'nur bei Entfernungen ≥ 8 km',
+                btnAddTrip: 'Fahrt hinzufügen',
+                summaryTrips: 'Anzahl Fahrten',
+                summaryTripsOver5: 'Fahrten mit Zuschlag (ab 5 km)',
+                summaryCash: 'Summe Bargeld',
+                summaryTips: 'Summe Trinkgeld (Info)',
+                summaryKm: 'Erfasste Kilometer',
+                summaryHoursWage: 'Lohn Stunden',
+                summaryTripsWage: 'Vergütung Fahrten',
+                summaryTotal: 'Gesamt (Stunden + Fahrten)',
+                summaryNet: 'Noch auszuzahlen (− Bargeld)',
+                infoNote: '* Trinkgeld wird nicht von der Auszahlung abgezogen und nicht im PDF aufgeführt.',
+                btnReset: 'Alles zurücksetzen',
+                btnExport: 'Als PDF exportieren',
+                footerNote: 'Basis: 1,50 € pro Fahrt · Zuschläge: ab 5 km +0,50 €, ab 7 km +1 €, ab 7,5 km +1,50 €, ab 8 km manueller Betrag',
+                settingsTitle: 'Einstellungen',
+                settingsDarkMode: 'Dark Mode',
+                settingsLanguage: 'Sprache',
+                settingsUpdate: 'App Update',
+                settingsDone: 'Fertig',
+                pillBar: 'Bar',
+                pillOnline: 'Online',
+                placeholderNoTrips: 'Noch keine Fahrten erfasst.',
+                bonusLabel: 'Zuschlag',
+                tipLabel: 'Trinkgeld',
+                fareLabel: 'Fahrt'
+            },
+            en: {
+                title: 'Rides & Hours',
+                subtitle: 'Track your rides and see what still has to be paid out.',
+                sectionNewTrip: 'New ride',
+                sectionTrips: 'Recorded rides',
+                sectionSummary: 'Summary',
+                labelPayment: 'Payment method',
+                labelAddress: 'Address',
+                labelCash: 'Cash amount (€)',
+                labelDistance: 'Distance (km)',
+                labelExtra8: 'Extra from 8 km (€)',
+                labelHours: 'Hours worked',
+                labelHourlyWage: 'Hourly wage (€)',
+                addressPlaceholderOnline: 'not needed for online',
+                addressPlaceholderBar: 'e.g. Musterstraße 1, Hanover',
+                cashPlaceholder: 'only for cash orders',
+                distancePlaceholder: 'empty = under 5 km',
+                extra8Placeholder: 'only for distances ≥ 8 km',
+                btnAddTrip: 'Add ride',
+                summaryTrips: 'Number of rides',
+                summaryTripsOver5: 'Rides with extra (from 5 km)',
+                summaryCash: 'Total cash',
+                summaryTips: 'Total tips (info)',
+                summaryKm: 'Recorded kilometers',
+                summaryHoursWage: 'Wage hours',
+                summaryTripsWage: 'Ride compensation',
+                summaryTotal: 'Total (hours + rides)',
+                summaryNet: 'Still to be paid (− cash)',
+                infoNote: '* Tips are not subtracted from payout and are not shown in the PDF.',
+                btnReset: 'Reset all',
+                btnExport: 'Export as PDF',
+                footerNote: 'Base: 1.50 € per ride · Extras: from 5 km +0.50 €, from 7 km +1 €, from 7.5 km +1.50 €, from 8 km manual amount',
+                settingsTitle: 'Settings',
+                settingsDarkMode: 'Dark mode',
+                settingsLanguage: 'Language',
+                settingsUpdate: 'App update',
+                settingsDone: 'Done',
+                pillBar: 'Cash',
+                pillOnline: 'Online',
+                placeholderNoTrips: 'No rides recorded yet.',
+                bonusLabel: 'Extra',
+                tipLabel: 'Tip',
+                fareLabel: 'Ride'
+            },
+            ru: {
+                title: 'Поездки и часы',
+                subtitle: 'Записывай поездки и смотри, сколько нужно выплатить.',
+                sectionNewTrip: 'Новая поездка',
+                sectionTrips: 'Записанные поездки',
+                sectionSummary: 'Расчёт',
+                labelPayment: 'Способ оплаты',
+                labelAddress: 'Адрес',
+                labelCash: 'Наличными (€)',
+                labelDistance: 'Расстояние (км)',
+                labelExtra8: 'Надбавка с 8 км (€)',
+                labelHours: 'Отработанные часы',
+                labelHourlyWage: 'Почасовая ставка (€)',
+                addressPlaceholderOnline: 'для онлайн не нужно',
+                addressPlaceholderBar: 'напр. Musterstraße 1, Hannover',
+                cashPlaceholder: 'только для наличных',
+                distancePlaceholder: 'пусто = меньше 5 км',
+                extra8Placeholder: 'только для расстояний ≥ 8 км',
+                btnAddTrip: 'Добавить поездку',
+                summaryTrips: 'Количество поездок',
+                summaryTripsOver5: 'Поездки с надбавкой (от 5 км)',
+                summaryCash: 'Сумма наличными',
+                summaryTips: 'Сумма чаевых (инфо)',
+                summaryKm: 'Учтённые километры',
+                summaryHoursWage: 'Оплата за часы',
+                summaryTripsWage: 'Оплата за поездки',
+                summaryTotal: 'Всего (часы + поездки)',
+                summaryNet: 'К выплате (− наличные)',
+                infoNote: '* Чаевые не вычитаются из выплаты и не показываются в PDF.',
+                btnReset: 'Сбросить всё',
+                btnExport: 'PDF-экспорт',
+                footerNote: 'База: 1,50 € за поездку · Надбавки: от 5 км +0,50 €, от 7 км +1 €, от 7,5 км +1,50 €, от 8 км — вручную',
+                settingsTitle: 'Настройки',
+                settingsDarkMode: 'Тёмная тема',
+                settingsLanguage: 'Язык',
+                settingsUpdate: 'Обновить приложение',
+                settingsDone: 'Готово',
+                pillBar: 'Наличные',
+                pillOnline: 'Онлайн',
+                placeholderNoTrips: 'Поездки ещё не добавлены.',
+                bonusLabel: 'Надбавка',
+                tipLabel: 'Чаевые',
+                fareLabel: 'Поездка'
+            }
+        };
+
+        let currentLang = 'de';
         let fahrten = [];
 
+        function t(key) {
+            const pack = translations[currentLang] || translations.de;
+            return pack[key] || translations.de[key] || key;
+        }
+
+        // DOM-Elemente
         const openSettings = document.getElementById('openSettings');
         const settingsModal = document.getElementById('settingsModal');
         const closeSettingsBtn = document.getElementById('closeSettings');
         const closeSettingsX = document.getElementById('closeSettingsX');
         const themeToggleBtn = document.getElementById('themeToggle');
         const appUpdateBtn = document.getElementById('appUpdate');
+        const languageSelect = document.getElementById('languageSelect');
 
+        const titleText = document.getElementById('titleText');
+        const subtitleText = document.getElementById('subtitleText');
+        const sectionNewTripText = document.getElementById('sectionNewTripText');
+        const sectionTripsText = document.getElementById('sectionTripsText');
+        const sectionSummaryText = document.getElementById('sectionSummaryText');
+
+        const labelPaymentText = document.getElementById('labelPaymentText');
+        const labelAddressText = document.getElementById('labelAddressText');
+        const labelCashText = document.getElementById('labelCashText');
+        const labelDistanceText = document.getElementById('labelDistanceText');
+        const labelExtra8Text = document.getElementById('labelExtra8Text');
+        const labelHoursText = document.getElementById('labelHoursText');
+        const labelHourlyWageText = document.getElementById('labelHourlyWageText');
+
+        const btnAddTripText = document.getElementById('btnAddTripText');
+        const btnResetText = document.getElementById('btnResetText');
+        const btnExportText = document.getElementById('btnExportText');
+
+        const summaryTripsLabelText = document.getElementById('summaryTripsLabelText');
+        const summaryTripsOver5LabelText = document.getElementById('summaryTripsOver5LabelText');
+        const summaryCashLabelText = document.getElementById('summaryCashLabelText');
+        const summaryTipsLabelText = document.getElementById('summaryTipsLabelText');
+        const summaryKmLabelText = document.getElementById('summaryKmLabelText');
+        const summaryHoursWageLabelText = document.getElementById('summaryHoursWageLabelText');
+        const summaryTripsWageLabelText = document.getElementById('summaryTripsWageLabelText');
+        const summaryTotalLabelText = document.getElementById('summaryTotalLabelText');
+        const summaryNetLabelText = document.getElementById('summaryNetLabelText');
+
+        const infoNoteText = document.getElementById('infoNoteText');
+        const footerNoteText = document.getElementById('footerNoteText');
+        const placeholderText = document.getElementById('placeholderText');
+
+        const settingsTitleText = document.getElementById('settingsTitleText');
+        const settingsDarkModeText = document.getElementById('settingsDarkModeText');
+        const settingsLanguageText = document.getElementById('settingsLanguageText');
+        const appUpdateText = document.getElementById('appUpdateText');
+        const closeSettingsText = document.getElementById('closeSettingsText');
 
         const adresseInput = document.getElementById('adresse');
         const zahlungsartSelect = document.getElementById('zahlungsart');
@@ -754,6 +960,90 @@
             });
         }
 
+        // Language handling
+        function updatePlaceholders() {
+            if (zahlungsartSelect.value === 'bar') {
+                adresseInput.placeholder = t('addressPlaceholderBar');
+            } else {
+                adresseInput.placeholder = t('addressPlaceholderOnline');
+            }
+            bargeldInput.placeholder = t('cashPlaceholder');
+            entfernungInput.placeholder = t('distancePlaceholder');
+            extra8kmInput.placeholder = t('extra8Placeholder');
+        }
+
+        function applyLanguage() {
+            const pack = translations[currentLang] || translations.de;
+
+            titleText.textContent = pack.title;
+            subtitleText.textContent = pack.subtitle;
+            sectionNewTripText.textContent = pack.sectionNewTrip;
+            sectionTripsText.textContent = pack.sectionTrips;
+            sectionSummaryText.textContent = pack.sectionSummary;
+
+            labelPaymentText.textContent = pack.labelPayment;
+            labelAddressText.textContent = pack.labelAddress;
+            labelCashText.textContent = pack.labelCash;
+            labelDistanceText.textContent = pack.labelDistance;
+            labelExtra8Text.textContent = pack.labelExtra8;
+            labelHoursText.textContent = pack.labelHours;
+            labelHourlyWageText.textContent = pack.labelHourlyWage;
+
+            btnAddTripText.textContent = pack.btnAddTrip;
+            btnResetText.textContent = pack.btnReset;
+            btnExportText.textContent = pack.btnExport;
+
+            summaryTripsLabelText.textContent = pack.summaryTrips;
+            summaryTripsOver5LabelText.textContent = pack.summaryTripsOver5;
+            summaryCashLabelText.textContent = pack.summaryCash;
+            summaryTipsLabelText.textContent = pack.summaryTips;
+            summaryKmLabelText.textContent = pack.summaryKm;
+            summaryHoursWageLabelText.textContent = pack.summaryHoursWage;
+            summaryTripsWageLabelText.textContent = pack.summaryTripsWage;
+            summaryTotalLabelText.textContent = pack.summaryTotal;
+            summaryNetLabelText.textContent = pack.summaryNet;
+
+            infoNoteText.textContent = pack.infoNote;
+            footerNoteText.textContent = pack.footerNote;
+
+            settingsTitleText.textContent = pack.settingsTitle;
+            settingsDarkModeText.textContent = pack.settingsDarkMode;
+            settingsLanguageText.textContent = pack.settingsLanguage;
+            appUpdateText.textContent = pack.settingsUpdate;
+            closeSettingsText.textContent = pack.settingsDone;
+
+            placeholderText.textContent = pack.placeholderNoTrips;
+
+            updatePlaceholders();
+        }
+
+        function initLanguage() {
+            let lang = 'de';
+            try {
+                const stored = localStorage.getItem(LANG_KEY);
+                if (stored && translations[stored]) {
+                    lang = stored;
+                }
+            } catch (e) { /* ignore */ }
+            currentLang = lang;
+            if (languageSelect) languageSelect.value = lang;
+            applyLanguage();
+        }
+
+        if (languageSelect) {
+            languageSelect.addEventListener('change', (e) => {
+                const lang = e.target.value;
+                if (!translations[lang]) return;
+                currentLang = lang;
+                try {
+                    localStorage.setItem(LANG_KEY, lang);
+                } catch (e2) { /* ignore */ }
+                applyLanguage();
+                renderFahrten();
+                berechneZusammenfassung();
+            });
+        }
+
         // Settings-Modal öffnen/schließen
         openSettings.addEventListener('click', () => {
             settingsModal.style.display = 'flex';
@@ -770,11 +1060,10 @@
             if (e.target === settingsModal) closeSettingsModal();
         });
 
+        // App Update Button
         appUpdateBtn.addEventListener('click', () => {
-            // Seite neu laden, immer vom Server (nicht aus Cache)
-            location.reload(true);
+            location.reload();
         });
-
 
         function loadState() {
             try {
@@ -806,14 +1095,13 @@
             if (zahlungsartSelect.value === 'bar') {
                 bargeldInput.disabled = false;
                 adresseInput.disabled = false;
-                adresseInput.placeholder = 'z.B. Musterstraße 1, Hannover';
             } else {
                 bargeldInput.disabled = true;
                 bargeldInput.value = '';
                 adresseInput.disabled = true;
                 adresseInput.value = '';
-                adresseInput.placeholder = 'bei Online nicht nötig';
             }
+            updatePlaceholders();
         });
 
         entfernungInput.addEventListener('input', () => {
@@ -1072,7 +1360,8 @@
 
         function renderFahrten() {
             if (fahrten.length === 0) {
-                fahrtenListe.innerHTML = '<li class="placeholder">Noch keine Fahrten erfasst.</li>';
+                fahrtenListe.innerHTML =
+                    '<li class="placeholder">' + t('placeholderNoTrips') + '</li>';
                 return;
             }
 
@@ -1095,7 +1384,7 @@
                     rightMain.textContent =
                         (f.bargeld || 0).toFixed(2).replace('.', ',') + ' €';
                 } else {
-                    rightMain.textContent = 'Online';
+                    rightMain.textContent = t('pillOnline');
                 }
 
                 header.appendChild(addr);
@@ -1109,10 +1398,9 @@
 
                 const pillZ = document.createElement('span');
                 pillZ.className = 'pill ' + (f.zahlungsart === 'bar' ? 'pill-bar' : 'pill-online');
-                pillZ.textContent = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
+                pillZ.textContent = f.zahlungsart === 'bar' ? t('pillBar') : t('pillOnline');
                 left.appendChild(pillZ);
 
-                // Immer Distanz-Pill
                 const pillD = document.createElement('span');
                 pillD.className = 'pill pill-distance';
                 if (typeof f.dist === 'number' && f.dist > 0) {
@@ -1124,18 +1412,18 @@
 
                 if (f.extraBonus > 0) {
                     const extraSpan = document.createElement('span');
-                    extraSpan.textContent = '· Zuschlag: +' + f.extraBonus.toFixed(2) + ' €';
+                    extraSpan.textContent = '· ' + t('bonusLabel') + ': +' + f.extraBonus.toFixed(2) + ' €';
                     left.appendChild(extraSpan);
                 }
 
                 if (f.trinkgeld && f.trinkgeld > 0) {
                     const trinkSpan = document.createElement('span');
-                    trinkSpan.textContent = '· Trinkgeld: ' + f.trinkgeld.toFixed(2) + ' €';
+                    trinkSpan.textContent = '· ' + t('tipLabel') + ': ' + f.trinkgeld.toFixed(2) + ' €';
                     left.appendChild(trinkSpan);
                 }
 
                 const fahrtSpan = document.createElement('span');
-                fahrtSpan.textContent = '· Fahrt: ' + f.vergütung.toFixed(2) + ' €';
+                fahrtSpan.textContent = '· ' + t('fareLabel') + ': ' + f.vergütung.toFixed(2) + ' €';
                 left.appendChild(fahrtSpan);
 
                 const right = document.createElement('div');
@@ -1216,6 +1504,7 @@
             const pageWidth = doc.internal.pageSize.getWidth();
             const marginX = 15;
 
+            // Farben (fix deutsch, keine Sprache)
             const colorDark = { r: 17, g: 24, b: 39 };
             const colorGray = { r: 107, g: 114, b: 128 };
             const colorPrimary = { r: 37, g: 99, b: 235 };
@@ -1412,6 +1701,7 @@
 
         // Initial
         initTheme();
+        initLanguage();
         loadState();
         renderFahrten();
         berechneZusammenfassung();
