@@ -536,6 +536,12 @@
                 border-color: #fecaca;
                 color: #fee2e2;
             }
+
+        /* >>> heller im Darkmode für Adresse & Betrag <<< */
+        .dark .fahrt-adresse,
+        .dark .fahrt-verg {
+            color: #e5e7eb;
+        }
     </style>
 </head>
 <body>
@@ -752,7 +758,10 @@
                 placeholderNoTrips: 'Noch keine Fahrten erfasst.',
                 bonusLabel: 'Zuschlag',
                 tipLabel: 'Trinkgeld',
-                fareLabel: 'Fahrt'
+                fareLabel: 'Fahrt',
+                btnTip: 'Trinkgeld',
+                btnEdit: 'Bearbeiten',
+                btnDelete: 'Löschen'
             },
             en: {
                 title: 'Rides & Hours',
@@ -796,7 +805,10 @@
                 placeholderNoTrips: 'No rides recorded yet.',
                 bonusLabel: 'Extra',
                 tipLabel: 'Tip',
-                fareLabel: 'Ride'
+                fareLabel: 'Ride',
+                btnTip: 'Tip',
+                btnEdit: 'Edit',
+                btnDelete: 'Delete'
             },
             ru: {
                 title: 'Поездки и часы',
@@ -840,7 +852,10 @@
                 placeholderNoTrips: 'Поездки ещё не добавлены.',
                 bonusLabel: 'Надбавка',
                 tipLabel: 'Чаевые',
-                fareLabel: 'Поездка'
+                fareLabel: 'Поездка',
+                btnTip: 'Чаевые',
+                btnEdit: 'Изменить',
+                btnDelete: 'Удалить'
             }
         };
 
@@ -1433,19 +1448,19 @@
                 tipBtn.className = 'btn-small';
                 tipBtn.type = 'button';
                 tipBtn.dataset.tipIndex = String(index);
-                tipBtn.textContent = 'Trinkgeld';
+                tipBtn.textContent = t('btnTip');
 
                 const editBtn = document.createElement('button');
                 editBtn.className = 'btn-small';
                 editBtn.type = 'button';
                 editBtn.dataset.editIndex = String(index);
-                editBtn.textContent = 'Bearbeiten';
+                editBtn.textContent = t('btnEdit');
 
                 const delBtn = document.createElement('button');
                 delBtn.className = 'btn-small delete';
                 delBtn.type = 'button';
                 delBtn.dataset.delIndex = String(index);
-                delBtn.textContent = 'Löschen';
+                delBtn.textContent = t('btnDelete');
 
                 right.appendChild(tipBtn);
                 right.appendChild(editBtn);
@@ -1504,7 +1519,6 @@
             const pageWidth = doc.internal.pageSize.getWidth();
             const marginX = 15;
 
-            // Farben (fix deutsch, keine Sprache)
             const colorDark = { r: 17, g: 24, b: 39 };
             const colorGray = { r: 107, g: 114, b: 128 };
             const colorPrimary = { r: 37, g: 99, b: 235 };
