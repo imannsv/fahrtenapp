@@ -922,12 +922,18 @@
                 addr.className = 'fahrt-adresse';
                 addr.textContent = (index + 1) + '. ' + f.adresse;
 
-                const verg = document.createElement('div');
-                verg.className = 'fahrt-verg money';
-                verg.textContent = f.vergütung.toFixed(2) + ' €';
+                const rightMain = document.createElement('div');
+                rightMain.className = 'fahrt-verg money';
+
+                if (f.zahlungsart === 'bar') {
+                    rightMain.textContent =
+                        (f.bargeld || 0).toFixed(2).replace('.', ',') + ' €';
+                } else {
+                    rightMain.textContent = 'Online';
+                }
 
                 header.appendChild(addr);
-                header.appendChild(verg);
+                header.appendChild(rightMain);
 
                 const meta = document.createElement('div');
                 meta.className = 'fahrt-meta';
@@ -940,11 +946,11 @@
                 pillZ.textContent = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 left.appendChild(pillZ);
 
-                // Immer eine Distanz-Pill:
+                // Immer Distanz-Pill
                 const pillD = document.createElement('span');
                 pillD.className = 'pill pill-distance';
                 if (typeof f.dist === 'number' && f.dist > 0) {
-                    pillD.textContent = f.dist.toFixed(1) + ' km';
+                    pillD.textContent = f.dist.toFixed(1).replace('.', ',') + ' km';
                 } else {
                     pillD.textContent = '< 5 km';
                 }
@@ -967,6 +973,10 @@
                     trinkSpan.textContent = '· Trinkgeld: ' + f.trinkgeld.toFixed(2) + ' €';
                     left.appendChild(trinkSpan);
                 }
+
+                const fahrtSpan = document.createElement('span');
+                fahrtSpan.textContent = '· Fahrt: ' + f.vergütung.toFixed(2) + ' €';
+                left.appendChild(fahrtSpan);
 
                 const right = document.createElement('div');
                 right.className = 'fahrt-meta-right';
