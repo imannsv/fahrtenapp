@@ -36,6 +36,13 @@
             margin-bottom: 12px;
         }
 
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
         .title {
             font-size: 22px;
             font-weight: 700;
@@ -46,7 +53,22 @@
         .subtitle {
             font-size: 13px;
             color: #6b7280;
+            margin-top: 2px;
         }
+
+        .theme-toggle {
+            border: none;
+            background: rgba(15,23,42,0.04);
+            border-radius: 999px;
+            padding: 4px 9px;
+            font-size: 16px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+            .theme-toggle:active {
+                transform: translateY(1px);
+            }
 
         .section-title {
             margin: 10px 0 4px;
@@ -100,6 +122,13 @@
                 background: #ffffff;
             }
 
+            input:disabled,
+            select:disabled {
+                background: #e5e7eb;
+                color: #9ca3af;
+                cursor: not-allowed;
+            }
+
         .btn {
             display: inline-flex;
             align-items: center;
@@ -137,6 +166,7 @@
         .btn-outline {
             border: 1px solid #2563eb;
             color: #2563eb;
+            background: #ffffff;
         }
 
         .btn-row {
@@ -150,6 +180,21 @@
                 flex: 1;
                 font-size: 12px;
                 padding: 6px 8px;
+            }
+
+        .quick-btn {
+            margin-top: 6px;
+            width: 100%;
+            font-size: 12px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            border: 1px dashed #9ca3af;
+            background: #f9fafb;
+            color: #4b5563;
+        }
+
+            .quick-btn:active {
+                transform: translateY(1px);
             }
 
         .btn-small {
@@ -307,12 +352,90 @@
         .money {
             font-variant-numeric: tabular-nums;
         }
+
+        /* Dark-Mode */
+        .dark body {
+            background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+        }
+
+        .dark .app {
+            background: rgba(15,23,42,0.96);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.6);
+        }
+
+        .dark .title {
+            color: #e5e7eb;
+        }
+
+        .dark .subtitle,
+        .dark .section-title,
+        .dark .summary-label,
+        .dark .footer-note,
+        .dark .info-note {
+            color: #9ca3af;
+        }
+
+        .dark .card {
+            background: #020617;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.8);
+        }
+
+        .dark input,
+        .dark select {
+            background: #020617;
+            border-color: #374151;
+            color: #e5e7eb;
+        }
+
+            .dark input::placeholder {
+                color: #6b7280;
+            }
+
+            .dark input:disabled,
+            .dark select:disabled {
+                background: #111827;
+                color: #6b7280;
+            }
+
+        .dark .summary-value {
+            color: #e5e7eb;
+        }
+
+        .dark .theme-toggle {
+            background: rgba(148,163,184,0.25);
+            color: #e5e7eb;
+        }
+
+        .dark .quick-btn {
+            background: #020617;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        .dark .btn-outline {
+            background: transparent;
+        }
+
+        .dark .btn-small {
+            background: #020617;
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+            .dark .btn-small.delete {
+                background: #7f1d1d;
+                border-color: #fecaca;
+                color: #fee2e2;
+            }
     </style>
 </head>
 <body>
     <div class="app">
         <div class="header">
-            <div class="title">Fahrten & Stunden</div>
+            <div class="header-top">
+                <div class="title">Fahrten & Stunden</div>
+                <button class="theme-toggle" id="themeToggle" type="button">🌙</button>
+            </div>
             <div class="subtitle">
                 Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.
             </div>
@@ -322,16 +445,17 @@
         <div class="section-title">Neue Fahrt</div>
         <div class="card">
             <label>
-                Adresse
-                <input type="text" id="adresse" placeholder="z.B. Musterstraße 1, Hannover">
-            </label>
-
-            <label>
                 Zahlungsart
                 <select id="zahlungsart">
                     <option value="online">Online</option>
                     <option value="bar">Bar</option>
                 </select>
+            </label>
+
+            <label>
+                Adresse
+                <input type="text" id="adresse"
+                       placeholder="bei Online nicht nötig">
             </label>
 
             <label>
@@ -356,6 +480,9 @@
             </label>
 
             <button class="btn btn-primary" id="addFahrtBtn">Fahrt hinzufügen</button>
+            <button class="quick-btn" id="quickOnlineBtn" type="button">
+                + Online-Fahrt unter 5 km
+            </button>
         </div>
 
         <!-- Erfasste Fahrten -->
@@ -389,7 +516,7 @@
                     <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Fahrten mit Zuschlag (≥ 5 km)</div>
+                    <div class="summary-label">Fahrten mit Zuschlag (ab 5 km)</div>
                     <div class="summary-value" id="anzahlÜber5">0</div>
                 </div>
                 <div class="summary-row">
@@ -399,6 +526,10 @@
                 <div class="summary-row">
                     <div class="summary-label">Summe Trinkgeld (Info)</div>
                     <div class="summary-value money" id="summeTrinkgeld">0,00 €</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Erfasste Kilometer</div>
+                    <div class="summary-value" id="summeKm">0,0 km</div>
                 </div>
                 <div class="summary-row">
                     <div class="summary-label">Lohn Stunden</div>
@@ -440,8 +571,11 @@
     <script>
         const BASIS_PRO_FAhrt = 1.5;
         const STORAGE_KEY = 'fahrtenApp_v4';
+        const THEME_KEY = 'fahrtenApp_theme';
 
         let fahrten = [];
+
+        const themeToggleBtn = document.getElementById('themeToggle');
 
         const adresseInput = document.getElementById('adresse');
         const zahlungsartSelect = document.getElementById('zahlungsart');
@@ -449,6 +583,7 @@
         const entfernungInput = document.getElementById('entfernung');
         const extra8kmInput = document.getElementById('extra8km');
         const addFahrtBtn = document.getElementById('addFahrtBtn');
+        const quickOnlineBtn = document.getElementById('quickOnlineBtn');
         const fahrtenListe = document.getElementById('fahrtenListe');
 
         const stundenInput = document.getElementById('stunden');
@@ -457,6 +592,7 @@
         const anzahlÜber5Span = document.getElementById('anzahlÜber5');
         const summeBargeldSpan = document.getElementById('summeBargeld');
         const summeTrinkgeldSpan = document.getElementById('summeTrinkgeld');
+        const summeKmSpan = document.getElementById('summeKm');
         const lohnStundenSpan = document.getElementById('lohnStunden');
         const lohnFahrtenSpan = document.getElementById('lohnFahrten');
         const gesamtBruttoSpan = document.getElementById('gesamtBrutto');
@@ -472,6 +608,32 @@
         function formatEuro(num) {
             return num.toFixed(2).replace('.', ',') + ' €';
         }
+
+        // Theme handling
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+            try {
+                localStorage.setItem(THEME_KEY, theme);
+            } catch (e) { /* ignore */ }
+        }
+
+        function initTheme() {
+            let theme = 'light';
+            try {
+                const stored = localStorage.getItem(THEME_KEY);
+                if (stored === 'dark' || stored === 'light') {
+                    theme = stored;
+                }
+            } catch (e) { /* ignore */ }
+            applyTheme(theme);
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        });
 
         function loadState() {
             try {
@@ -502,9 +664,14 @@
         zahlungsartSelect.addEventListener('change', () => {
             if (zahlungsartSelect.value === 'bar') {
                 bargeldInput.disabled = false;
+                adresseInput.disabled = false;
+                adresseInput.placeholder = 'z.B. Musterstraße 1, Hannover';
             } else {
                 bargeldInput.disabled = true;
                 bargeldInput.value = '';
+                adresseInput.disabled = true;
+                adresseInput.value = '';
+                adresseInput.placeholder = 'bei Online nicht nötig';
             }
         });
 
@@ -519,12 +686,19 @@
         });
 
         addFahrtBtn.addEventListener('click', () => {
-            const adresse = adresseInput.value.trim();
             const zahlungsart = zahlungsartSelect.value;
+            const rawAdresse = adresseInput.value.trim();
+            let adresse = rawAdresse;
 
-            if (!adresse) {
-                alert('Bitte eine Adresse eingeben.');
-                return;
+            if (zahlungsart === 'bar') {
+                if (!adresse) {
+                    alert('Bitte bei Barzahlung eine Adresse eingeben.');
+                    return;
+                }
+            } else {
+                if (!adresse) {
+                    adresse = 'Online-Bestellung';
+                }
             }
 
             // Entfernung: leer = unter 5 km (kein Zuschlag)
@@ -549,23 +723,18 @@
 
             let extraBonus = 0;
 
-            // Ab 8 km → manueller Zuschlag
             if (dist >= 8) {
                 extraBonus = parseEuro(extra8kmInput.value);
                 if (extraBonus <= 0) {
                     alert('Bitte den Zuschlag für Entfernungen ab 8 km eingeben.');
                     return;
                 }
-                // 7,5–<8 km → +1,50 €
             } else if (dist >= 7.5) {
                 extraBonus = 1.5;
-                // 7–<7,5 km → +1,00 €
             } else if (dist >= 7) {
                 extraBonus = 1.0;
-                // 5–<7 km → +0,50 €
             } else if (dist >= 5) {
                 extraBonus = 0.5;
-                // <5 km oder leer → kein Zuschlag
             }
 
             const vergütung = BASIS_PRO_FAhrt + extraBonus;
@@ -586,6 +755,22 @@
             extra8kmInput.disabled = true;
             if (zahlungsart === 'bar') bargeldInput.value = '';
 
+            renderFahrten();
+            berechneZusammenfassung();
+            saveState();
+        });
+
+        // Schnell-Button: Online-Fahrt < 5 km, kein Zuschlag
+        quickOnlineBtn.addEventListener('click', () => {
+            fahrten.push({
+                adresse: 'Online-Bestellung',
+                zahlungsart: 'online',
+                bargeld: 0,
+                dist: 0,
+                extraBonus: 0,
+                trinkgeld: 0,
+                vergütung: BASIS_PRO_FAhrt
+            });
             renderFahrten();
             berechneZusammenfassung();
             saveState();
@@ -655,7 +840,7 @@
                 'Trinkgeld für diese Fahrt in € (Komma oder Punkt möglich):',
                 current > 0 ? current.toFixed(2).replace('.', ',') : ''
             );
-            if (input === null) return; // Abbruch
+            if (input === null) return;
 
             const val = parseEuro(input);
             if (val < 0) {
@@ -672,7 +857,6 @@
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
 
-            // Adresse
             const adr = prompt('Adresse bearbeiten:', f.adresse || '');
             if (adr === null) return;
             const neueAdresse = adr.trim();
@@ -681,7 +865,6 @@
                 return;
             }
 
-            // Zahlungsart
             const zahlPrompt = prompt(
                 'Zahlungsart (online/bar) – leer lassen, um unverändert zu lassen:',
                 f.zahlungsart
@@ -696,7 +879,6 @@
                 }
             }
 
-            // Bargeld
             const bargPrompt = prompt(
                 'Bargeldbetrag in € (leer = 0):',
                 f.bargeld ? f.bargeld.toFixed(2).replace('.', ',') : ''
@@ -708,7 +890,6 @@
                 return;
             }
 
-            // Entfernung
             const distPrompt = prompt(
                 'Entfernung in km (leer = unter 5 km):',
                 (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1).replace('.', ',') : ''
@@ -723,7 +904,6 @@
                 }
             }
 
-            // Zuschlag aus Distanz
             let neuerExtraBonus = 0;
             if (neueDist >= 8) {
                 const extraPrompt = prompt(
@@ -866,18 +1046,20 @@
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
             const summeTrinkgeld = fahrten.reduce((sum, f) => sum + (f.trinkgeld || 0), 0);
             const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+            const sumKm = fahrten.reduce((sum, f) => sum + (f.dist || 0), 0);
 
             const stunden = parseEuro(stundenInput.value);
             const stundenlohn = parseEuro(stundenlohnInput.value);
 
             const lohnStunden = stunden * stundenlohn;
             const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
-            const nettoAuszahlung = gesamtBrutto - summeBargeld; // Trinkgeld wird NICHT abgezogen
+            const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
             anzahlFahrtenSpan.textContent = anzahl;
             anzahlÜber5Span.textContent = anzahlZuschlag;
             summeBargeldSpan.textContent = formatEuro(summeBargeld);
             summeTrinkgeldSpan.textContent = formatEuro(summeTrinkgeld);
+            summeKmSpan.textContent = sumKm.toFixed(1).replace('.', ',') + ' km';
             lohnStundenSpan.textContent = formatEuro(lohnStunden);
             lohnFahrtenSpan.textContent = formatEuro(summeFahrtenVergütung);
             gesamtBruttoSpan.textContent = formatEuro(gesamtBrutto);
@@ -902,7 +1084,6 @@
             const pageWidth = doc.internal.pageSize.getWidth();
             const marginX = 15;
 
-            // Farben
             const colorDark = { r: 17, g: 24, b: 39 };
             const colorGray = { r: 107, g: 114, b: 128 };
             const colorPrimary = { r: 37, g: 99, b: 235 };
@@ -910,7 +1091,6 @@
             const colorTableHeader = { r: 243, g: 244, b: 246 };
             const colorTableStripe = { r: 249, g: 250, b: 251 };
 
-            // Header-Balken
             doc.setFillColor(colorPrimary.r, colorPrimary.g, colorPrimary.b);
             doc.rect(0, 0, pageWidth, 22, 'F');
 
@@ -927,18 +1107,17 @@
 
             let y = 26;
 
-            // Daten vorbereiten
             const anzahl = fahrten.length;
             const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
             const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+            const sumKm = fahrten.reduce((sum, f) => sum + (f.dist || 0), 0);
             const stunden = parseEuro(stundenInput.value);
             const stundenlohn = parseEuro(stundenlohnInput.value);
             const lohnStunden = stunden * stundenlohn;
             const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
             const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
-            // Zusammenfassungs-Box
             const summaryBoxWidth = pageWidth - marginX * 2;
             const summaryBoxHeight = 40;
 
@@ -962,14 +1141,14 @@
                 `Anzahl Fahrten: ${anzahl}`,
                 `Fahrten mit Zuschlag (ab 5 km): ${anzahlZuschlag}`,
                 `Stunden gearbeitet: ${stunden} h`,
-                `Stundenlohn: ${stundenlohn.toFixed(2)} €`
+                `Erfasste Kilometer: ${sumKm.toFixed(1)} km`
             ];
 
             const summaryLinesRight = [
+                `Stundenlohn: ${stundenlohn.toFixed(2)} €`,
                 `Lohn Stunden: ${lohnStunden.toFixed(2)} €`,
-                `Verguetung Fahrten: ${summeFahrtenVergütung.toFixed(2)} €`,
+                `Vergütung Fahrten: ${summeFahrtenVergütung.toFixed(2)} €`,
                 `Summe Bargeld: ${summeBargeld.toFixed(2)} €`,
-                `Noch auszuzahlen: ${nettoAuszahlung.toFixed(2)} €`
             ];
 
             doc.setTextColor(colorGray.r, colorGray.g, colorGray.b);
@@ -986,14 +1165,12 @@
 
             y += summaryBoxHeight + 10;
 
-            // Tabellenüberschrift
             doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
             doc.text('Einzelne Fahrten', marginX, y);
             y += 4;
 
-            // Tabellenkopf
             const colNr = marginX;
             const colAdr = marginX + 8;
             const colZahlung = marginX + 80;
@@ -1051,7 +1228,12 @@
 
                 const nr = String(index + 1);
                 let adrText = f.adresse || '';
-                if (adrText.length > 40) adrText = adrText.slice(0, 37) + '...';
+                if (f.zahlungsart === 'online') {
+                    adrText = 'Online';
+                } else if (adrText.length > 40) {
+                    adrText = adrText.slice(0, 37) + '...';
+                }
+
                 const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
                 const distStr = (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1) + ' km' : '-';
@@ -1069,6 +1251,20 @@
                 y += rowHeight;
             });
 
+            y += 4;
+            if (y > 280) {
+                doc.addPage();
+                y = 20;
+            }
+
+            doc.setFontSize(9);
+            doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
+            doc.text(
+                `Noch auszuzahlen (abzüglich Bargeld): ${nettoAuszahlung.toFixed(2)} €`,
+                marginX,
+                y
+            );
+
             const footerY = 290;
             doc.setFontSize(8);
             doc.setTextColor(colorGray.r, colorGray.g, colorGray.b);
@@ -1083,9 +1279,12 @@
         }
 
         // Initial
+        initTheme();
         loadState();
         renderFahrten();
         berechneZusammenfassung();
+        // Standard: Online = Adresse + Bargeld gesperrt
+        zahlungsartSelect.dispatchEvent(new Event('change'));
     </script>
 </body>
 </html>
