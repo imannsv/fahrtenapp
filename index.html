@@ -152,7 +152,7 @@
                 padding: 6px 8px;
             }
 
-        .btn-tip {
+        .btn-small {
             border-radius: 999px;
             border: 1px solid #d1d5db;
             padding: 2px 8px;
@@ -162,12 +162,18 @@
             cursor: pointer;
         }
 
-            .btn-tip:hover {
+            .btn-small:hover {
                 background: #e5e7eb;
             }
 
+            .btn-small.delete {
+                color: #b91c1c;
+                border-color: #fecaca;
+                background: #fef2f2;
+            }
+
         .fahrten-list {
-            max-height: 220px;
+            max-height: 240px;
             overflow-y: auto;
             margin: 0;
             padding: 0;
@@ -216,6 +222,12 @@
         .fahrt-meta-left {
             display: flex;
             flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .fahrt-meta-right {
+            display: flex;
             gap: 4px;
             align-items: center;
         }
@@ -333,7 +345,7 @@
                 Entfernung (km)
                 <input type="number" id="entfernung" step="0.1" min="0"
                        inputmode="decimal"
-                       placeholder="z.B. 6.8">
+                       placeholder="leer = unter 5 km">
             </label>
 
             <label>
@@ -515,15 +527,24 @@
                 return;
             }
 
-            let dist = parseEuro(entfernungInput.value);
-            if (!dist || dist <= 0) {
-                alert('Bitte eine Entfernung in km eingeben.');
-                return;
+            // Entfernung: leer = unter 5 km (kein Zuschlag)
+            let dist = 0;
+            const distRaw = entfernungInput.value;
+            if (distRaw && distRaw.trim() !== '') {
+                dist = parseEuro(distRaw);
+                if (dist < 0) {
+                    alert('Entfernung darf nicht negativ sein.');
+                    return;
+                }
             }
 
             let bargeld = 0;
             if (zahlungsart === 'bar') {
                 bargeld = parseEuro(bargeldInput.value);
+                if (bargeld < 0) {
+                    alert('Bargeldbetrag darf nicht negativ sein.');
+                    return;
+                }
             }
 
             let extraBonus = 0;
@@ -544,7 +565,7 @@
                 // 5–<7 km → +0,50 €
             } else if (dist >= 5) {
                 extraBonus = 0.5;
-                // <5 km → kein Zuschlag
+                // <5 km oder leer → kein Zuschlag
             }
 
             const vergütung = BASIS_PRO_FAhrt + extraBonus;
@@ -595,14 +616,41 @@
             exportToPdf();
         });
 
-        // Trinkgeld-Handling per Klick (Event-Delegation)
+        // Klick-Handling für Trinkgeld, Bearbeiten, Löschen (Event Delegation)
         fahrtenListe.addEventListener('click', (e) => {
-            const btn = e.target.closest('[data-tip-index]');
-            if (!btn) return;
-            const idx = parseInt(btn.dataset.tipIndex, 10);
-            if (isNaN(idx) || !fahrten[idx]) return;
+            const tipBtn = e.target.closest('[data-tip-index]');
+            if (tipBtn) {
+                const idx = parseInt(tipBtn.dataset.tipIndex, 10);
+                if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                handleTrinkgeld(idx);
+                return;
+            }
 
-            const current = fahrten[idx].trinkgeld || 0;
+            const editBtn = e.target.closest('[data-edit-index]');
+            if (editBtn) {
+                const idx = parseInt(editBtn.dataset.editIndex, 10);
+                if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                handleEditFahrt(idx);
+                return;
+            }
+
+            const delBtn = e.target.closest('[data-del-index]');
+            if (delBtn) {
+                const idx = parseInt(delBtn.dataset.delIndex, 10);
+                if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                if (confirm('Diese Fahrt wirklich löschen?')) {
+                    fahrten.splice(idx, 1);
+                    renderFahrten();
+                    berechneZusammenfassung();
+                    saveState();
+                }
+                return;
+            }
+        });
+
+        function handleTrinkgeld(idx) {
+            const f = fahrten[idx];
+            const current = f.trinkgeld || 0;
             const input = prompt(
                 'Trinkgeld für diese Fahrt in € (Komma oder Punkt möglich):',
                 current > 0 ? current.toFixed(2).replace('.', ',') : ''
@@ -615,11 +663,107 @@
                 return;
             }
 
-            fahrten[idx].trinkgeld = val;
+            f.trinkgeld = val;
             renderFahrten();
             berechneZusammenfassung();
             saveState();
-        });
+        }
+
+        function handleEditFahrt(idx) {
+            const f = fahrten[idx];
+
+            // Adresse
+            const adr = prompt('Adresse bearbeiten:', f.adresse || '');
+            if (adr === null) return;
+            const neueAdresse = adr.trim();
+            if (!neueAdresse) {
+                alert('Adresse darf nicht leer sein.');
+                return;
+            }
+
+            // Zahlungsart
+            const zahlPrompt = prompt(
+                'Zahlungsart (online/bar) – leer lassen, um unverändert zu lassen:',
+                f.zahlungsart
+            );
+            let neueZahlungsart = f.zahlungsart;
+            if (zahlPrompt !== null && zahlPrompt.trim() !== '') {
+                const z = zahlPrompt.trim().toLowerCase();
+                if (z === 'online' || z === 'bar') {
+                    neueZahlungsart = z;
+                } else {
+                    alert('Ungültige Zahlungsart, es bleibt bei: ' + f.zahlungsart);
+                }
+            }
+
+            // Bargeld
+            const bargPrompt = prompt(
+                'Bargeldbetrag in € (leer = 0):',
+                f.bargeld ? f.bargeld.toFixed(2).replace('.', ',') : ''
+            );
+            if (bargPrompt === null) return;
+            let neuerBargeld = parseEuro(bargPrompt);
+            if (neuerBargeld < 0) {
+                alert('Bargeldbetrag darf nicht negativ sein.');
+                return;
+            }
+
+            // Entfernung
+            const distPrompt = prompt(
+                'Entfernung in km (leer = unter 5 km):',
+                (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1).replace('.', ',') : ''
+            );
+            if (distPrompt === null) return;
+            let neueDist = 0;
+            if (distPrompt.trim() !== '') {
+                neueDist = parseEuro(distPrompt);
+                if (neueDist < 0) {
+                    alert('Entfernung darf nicht negativ sein.');
+                    return;
+                }
+            }
+
+            // Zuschlag aus Distanz
+            let neuerExtraBonus = 0;
+            if (neueDist >= 8) {
+                const extraPrompt = prompt(
+                    'Zuschlag ab 8 km in €:',
+                    f.extraBonus > 0 && f.dist >= 8
+                        ? f.extraBonus.toFixed(2).replace('.', ',')
+                        : ''
+                );
+                if (extraPrompt === null) return;
+                neuerExtraBonus = parseEuro(extraPrompt);
+                if (neuerExtraBonus <= 0) {
+                    alert('Zuschlag muss größer als 0 sein.');
+                    return;
+                }
+            } else if (neueDist >= 7.5) {
+                neuerExtraBonus = 1.5;
+            } else if (neueDist >= 7) {
+                neuerExtraBonus = 1.0;
+            } else if (neueDist >= 5) {
+                neuerExtraBonus = 0.5;
+            } else {
+                neuerExtraBonus = 0;
+            }
+
+            const neueVerguetung = BASIS_PRO_FAhrt + neuerExtraBonus;
+
+            fahrten[idx] = {
+                ...f,
+                adresse: neueAdresse,
+                zahlungsart: neueZahlungsart,
+                bargeld: neuerBargeld,
+                dist: neueDist,
+                extraBonus: neuerExtraBonus,
+                vergütung: neueVerguetung
+            };
+
+            renderFahrten();
+            berechneZusammenfassung();
+            saveState();
+        }
 
         function renderFahrten() {
             if (fahrten.length === 0) {
@@ -682,14 +826,33 @@
                     left.appendChild(trinkSpan);
                 }
 
+                const right = document.createElement('div');
+                right.className = 'fahrt-meta-right';
+
                 const tipBtn = document.createElement('button');
-                tipBtn.className = 'btn-tip';
+                tipBtn.className = 'btn-small';
                 tipBtn.type = 'button';
                 tipBtn.dataset.tipIndex = String(index);
                 tipBtn.textContent = 'Trinkgeld';
 
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn-small';
+                editBtn.type = 'button';
+                editBtn.dataset.editIndex = String(index);
+                editBtn.textContent = 'Bearbeiten';
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-small delete';
+                delBtn.type = 'button';
+                delBtn.dataset.delIndex = String(index);
+                delBtn.textContent = 'Löschen';
+
+                right.appendChild(tipBtn);
+                right.appendChild(editBtn);
+                right.appendChild(delBtn);
+
                 meta.appendChild(left);
-                meta.appendChild(tipBtn);
+                meta.appendChild(right);
 
                 li.appendChild(header);
                 li.appendChild(meta);
