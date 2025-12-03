@@ -962,12 +962,6 @@
                     left.appendChild(extraSpan);
                 }
 
-                if (f.bargeld > 0) {
-                    const bargeldSpan = document.createElement('span');
-                    bargeldSpan.textContent = '· Bargeld: ' + f.bargeld.toFixed(2) + ' €';
-                    left.appendChild(bargeldSpan);
-                }
-
                 if (f.trinkgeld && f.trinkgeld > 0) {
                     const trinkSpan = document.createElement('span');
                     trinkSpan.textContent = '· Trinkgeld: ' + f.trinkgeld.toFixed(2) + ' €';
