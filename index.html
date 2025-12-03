@@ -607,7 +607,9 @@
             <label>
                 <span id="labelAddressText">Adresse</span>
                 <input type="text" id="adresse"
+                       list="addressSuggestions"
                        placeholder="bei Online nicht nötig">
+                <datalist id="addressSuggestions"></datalist>
             </label>
 
             <label>
@@ -755,6 +757,14 @@
         const THEME_KEY = 'fahrtenApp_theme';
         const LANG_KEY = 'fahrtenApp_lang';
         const APP_VERSION = "1.17";
+        // Adressen für Autocomplete – hier kannst du deine Stadtteil-Adressen eintragen
+        const KNOWN_ADDRESSES = [
+            // Beispiel:
+            // "Musterstraße 10, Laatzen",
+            // "Hauptstraße 5, Laatzen",
+            // "Rewe Musterstraße, Laatzen",
+        ];
+
 
 
         const translations = {
@@ -1009,6 +1019,19 @@
             } catch (e) { /* ignore */ }
             applyTheme(theme);
         }
+
+        function fillAddressDatalist() {
+            const dl = document.getElementById('addressSuggestions');
+            if (!dl) return;
+
+            dl.innerHTML = '';
+            KNOWN_ADDRESSES.forEach(addr => {
+                const opt = document.createElement('option');
+                opt.value = addr;
+                dl.appendChild(opt);
+            });
+        }
+
 
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
@@ -1782,6 +1805,7 @@
         }
 
 
+
         async function checkForUpdate() {
             try {
                 const response = await fetch('https://imannsv.github.io/fahrtenapp/version.json', {
@@ -1810,6 +1834,8 @@
         zahlungsartSelect.dispatchEvent(new Event('change'));
 
         checkForUpdate();   // ← HIER wird die Update-Prüfung gestartet
+        fillAddressDatalist();
+
     </script>
 </body>
 </html>
