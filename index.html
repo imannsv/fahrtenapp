@@ -24,7 +24,7 @@
         .app {
             width: 100%;
             max-width: 480px;
-            background: rgba(255,255,255,0.92);
+            background: rgba(255,255,255,0.96);
             backdrop-filter: blur(14px);
             border-radius: 20px;
             box-shadow: 0 18px 40px rgba(15,23,42,0.18);
@@ -82,6 +82,15 @@
             font-size: 14px;
             outline: none;
             background: #f9fafb;
+            color: #111827; /* dunklere Schrift */
+        }
+
+            input::placeholder {
+                color: #6b7280; /* dunklerer Placeholder */
+            }
+
+        select {
+            color: #111827;
         }
 
             input:focus,
@@ -89,20 +98,6 @@
                 border-color: #2563eb;
                 box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
                 background: #ffffff;
-            }
-
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 8px;
-            font-size: 13px;
-            color: #374151;
-        }
-
-            .checkbox-row input {
-                width: auto;
-                margin: 0;
             }
 
         .btn {
@@ -304,10 +299,15 @@
                 <input type="number" id="bargeld" step="0.01" min="0" placeholder="nur bei Barzahlung" disabled>
             </label>
 
-            <div class="checkbox-row">
-                <input type="checkbox" id="ueber5km">
-                <span>&gt; 5 km von der Arbeit entfernt (+0,50 €)</span>
-            </div>
+            <label>
+                Entfernung (km)
+                <input type="number" id="entfernung" step="0.1" min="0" placeholder="z.B. 6.8">
+            </label>
+
+            <label>
+                Zuschlag ab 8 km (€)
+                <input type="number" id="extra8km" step="0.01" min="0" placeholder="nur bei Entfernungen ≥ 8 km" disabled>
+            </label>
 
             <button class="btn btn-primary" id="addFahrtBtn">Fahrt hinzufügen</button>
         </div>
@@ -339,7 +339,7 @@
                     <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
                 <div class="summary-row">
-                    <div class="summary-label">Fahrten &gt; 5 km</div>
+                    <div class="summary-label">Fahrten mit Zuschlag (≥ 5 km)</div>
                     <div class="summary-value" id="anzahlÜber5">0</div>
                 </div>
                 <div class="summary-row">
@@ -372,7 +372,7 @@
         </div>
 
         <div class="footer-note">
-            Grundvergütung: 1,50 € pro Fahrt · &gt;5 km: +0,50 €
+            Basis: 1,50 € pro Fahrt · Zuschläge: ab 5 km +0,50 €, ab 7 km +1 €, ab 7,5 km +1,50 €, ab 8 km manueller Betrag
         </div>
     </div>
 
@@ -381,15 +381,15 @@
 
     <script>
         const BASIS_PRO_FAhrt = 1.5;
-        const BONUS_UEBER_5KM = 0.5;
-        const STORAGE_KEY = 'fahrtenApp_v2';
+        const STORAGE_KEY = 'fahrtenApp_v3';
 
         let fahrten = [];
 
         const adresseInput = document.getElementById('adresse');
         const zahlungsartSelect = document.getElementById('zahlungsart');
         const bargeldInput = document.getElementById('bargeld');
-        const ueber5kmCheckbox = document.getElementById('ueber5km');
+        const entfernungInput = document.getElementById('entfernung');
+        const extra8kmInput = document.getElementById('extra8km');
         const addFahrtBtn = document.getElementById('addFahrtBtn');
         const fahrtenListe = document.getElementById('fahrtenListe');
 
@@ -449,13 +449,28 @@
             }
         });
 
+        entfernungInput.addEventListener('input', () => {
+            const dist = parseEuro(entfernungInput.value);
+            if (dist >= 8) {
+                extra8kmInput.disabled = false;
+            } else {
+                extra8kmInput.disabled = true;
+                extra8kmInput.value = '';
+            }
+        });
+
         addFahrtBtn.addEventListener('click', () => {
             const adresse = adresseInput.value.trim();
             const zahlungsart = zahlungsartSelect.value;
-            const ueber5km = ueber5kmCheckbox.checked;
 
             if (!adresse) {
                 alert('Bitte eine Adresse eingeben.');
+                return;
+            }
+
+            let dist = parseEuro(entfernungInput.value);
+            if (!dist || dist <= 0) {
+                alert('Bitte eine Entfernung in km eingeben.');
                 return;
             }
 
@@ -464,12 +479,42 @@
                 bargeld = parseEuro(bargeldInput.value);
             }
 
-            const vergütung = BASIS_PRO_FAhrt + (ueber5km ? BONUS_UEBER_5KM : 0);
+            let extraBonus = 0;
 
-            fahrten.push({ adresse, zahlungsart, bargeld, ueber5km, vergütung });
+            // Ab 8 km → manueller Zuschlag
+            if (dist >= 8) {
+                extraBonus = parseEuro(extra8kmInput.value);
+                if (extraBonus <= 0) {
+                    alert('Bitte den Zuschlag für Entfernungen ab 8 km eingeben.');
+                    return;
+                }
+                // 7,5–<8 km → +1,50 €
+            } else if (dist >= 7.5) {
+                extraBonus = 1.5;
+                // 7–<7,5 km → +1,00 €
+            } else if (dist >= 7) {
+                extraBonus = 1.0;
+                // 5–<7 km → +0,50 €
+            } else if (dist >= 5) {
+                extraBonus = 0.5;
+                // <5 km → kein Zuschlag
+            }
+
+            const vergütung = BASIS_PRO_FAhrt + extraBonus;
+
+            fahrten.push({
+                adresse,
+                zahlungsart,
+                bargeld,
+                dist,
+                extraBonus,
+                vergütung
+            });
 
             adresseInput.value = '';
-            ueber5kmCheckbox.checked = false;
+            entfernungInput.value = '';
+            extra8kmInput.value = '';
+            extra8kmInput.disabled = true;
             if (zahlungsart === 'bar') bargeldInput.value = '';
 
             renderFahrten();
@@ -535,11 +580,17 @@
                 pillZ.textContent = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 meta.appendChild(pillZ);
 
-                if (f.ueber5km) {
+                if (typeof f.dist === 'number' && f.dist > 0) {
                     const pillD = document.createElement('span');
                     pillD.className = 'pill pill-distance';
-                    pillD.textContent = '>5 km';
+                    pillD.textContent = f.dist.toFixed(1) + ' km';
                     meta.appendChild(pillD);
+                }
+
+                if (f.extraBonus > 0) {
+                    const extraSpan = document.createElement('span');
+                    extraSpan.textContent = '· Zuschlag: +' + f.extraBonus.toFixed(2) + ' €';
+                    meta.appendChild(extraSpan);
                 }
 
                 if (f.bargeld > 0) {
@@ -556,7 +607,7 @@
 
         function berechneZusammenfassung() {
             const anzahl = fahrten.length;
-            const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
+            const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
             const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
 
@@ -568,7 +619,7 @@
             const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
             anzahlFahrtenSpan.textContent = anzahl;
-            anzahlÜber5Span.textContent = anzahlÜber5;
+            anzahlÜber5Span.textContent = anzahlZuschlag;
             summeBargeldSpan.textContent = formatEuro(summeBargeld);
             lohnStundenSpan.textContent = formatEuro(lohnStunden);
             lohnFahrtenSpan.textContent = formatEuro(summeFahrtenVergütung);
@@ -608,10 +659,11 @@
             doc.setFont('helvetica', 'bold');
             doc.text('Nr', marginLeft, y);
             doc.text('Adresse', marginLeft + 10, y);
-            doc.text('Zahlung', marginLeft + 90, y);
-            doc.text('Bargeld', marginLeft + 120, y);
-            doc.text('>5 km', marginLeft + 145, y);
-            doc.text('Vergütung', marginLeft + 165, y);
+            doc.text('Zahlung', marginLeft + 80, y);
+            doc.text('Bargeld', marginLeft + 100, y);
+            doc.text('Entf.', marginLeft + 125, y);
+            doc.text('Zuschlag', marginLeft + 145, y);
+            doc.text('Vergütung', marginLeft + 170, y);
             y += 4;
             doc.line(marginLeft, y, 200 - marginLeft, y);
             y += 4;
@@ -623,19 +675,21 @@
                     y = 15;
                 }
                 const nr = String(index + 1);
-                let adrText = f.adresse;
+                let adrText = f.adresse || '';
                 if (adrText.length > 40) adrText = adrText.slice(0, 37) + '...';
                 const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
                 const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
-                const dist = f.ueber5km ? 'Ja' : 'Nein';
+                const distStr = (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1) + ' km' : '-';
+                const extraStr = f.extraBonus > 0 ? '+' + f.extraBonus.toFixed(2) + ' €' : '-';
                 const verg = f.vergütung.toFixed(2) + ' €';
 
                 doc.text(nr, marginLeft, y);
                 doc.text(adrText, marginLeft + 10, y);
-                doc.text(zahlung, marginLeft + 90, y);
-                doc.text(bargeld, marginLeft + 120, y);
-                doc.text(dist, marginLeft + 145, y);
-                doc.text(verg, marginLeft + 165, y);
+                doc.text(zahlung, marginLeft + 80, y);
+                doc.text(bargeld, marginLeft + 100, y);
+                doc.text(distStr, marginLeft + 125, y);
+                doc.text(extraStr, marginLeft + 145, y);
+                doc.text(verg, marginLeft + 170, y);
                 y += 5;
             });
 
@@ -646,7 +700,7 @@
             }
 
             const anzahl = fahrten.length;
-            const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
+            const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
             const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
             const stunden = parseEuro(stundenInput.value);
@@ -664,7 +718,7 @@
 
             const lines = [
                 'Anzahl Fahrten: ' + anzahl,
-                'Fahrten > 5 km: ' + anzahlÜber5,
+                'Fahrten mit Zuschlag (≥ 5 km): ' + anzahlZuschlag,
                 'Stunden gearbeitet: ' + stunden + ' h',
                 'Stundenlohn: ' + stundenlohn.toFixed(2) + ' €',
                 'Lohn Stunden: ' + lohnStunden.toFixed(2) + ' €',
