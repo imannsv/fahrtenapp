@@ -1,631 +1,692 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-  <meta charset="utf-8">
-  <title>Fahrten Abrechnung</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <!-- Framework7 CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/framework7/framework7-bundle.min.css">
-  <style>
-    body {
-      background: linear-gradient(180deg, #f5f7fb, #e4ecf7);
-    }
-    .navbar-inner {
-      background: linear-gradient(90deg, #2563eb, #4f46e5);
-      color: #fff;
-    }
-    .navbar .title {
-      color: #fff;
-      font-weight: 600;
-    }
-    .page-content {
-      padding-top: 0;
-    }
-    .app-header {
-      padding: 16px 16px 8px;
-      color: #111827;
-    }
-    .app-header-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .app-header-subtitle {
-      font-size: 13px;
-      color: #6b7280;
-    }
-    .card {
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-      border: none;
-    }
-    .block-title {
-      margin-top: 16px;
-      margin-bottom: 4px;
-      padding-left: 16px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #4b5563;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-    .button.button-fill.color-primary {
-      border-radius: 999px;
-    }
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-    .summary-label {
-      font-weight: 500;
-      color: #4b5563;
-    }
-    .summary-value {
-      text-align: right;
-      font-weight: 600;
-      color: #111827;
-    }
-    .summary-value-strong {
-      font-size: 16px;
-    }
-    .summary-value-green {
-      color: #059669;
-    }
-    .summary-value-red {
-      color: #b91c1c;
-    }
-    .money {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-    .pill-online {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-    .pill-bar {
-      background: #fef3c7;
-      color: #92400e;
-    }
-    .pill-distance {
-      background: #dcfce7;
-      color: #166534;
-      margin-left: 4px;
-    }
-    .fahrten-card {
-      margin-top: 8px;
-    }
-    .toolbar-inner {
-      font-size: 12px;
-    }
-    .toolbar-inner span {
-      opacity: 0.8;
-    }
-    .no-fahrten-placeholder {
-      padding: 8px 0;
-      font-size: 13px;
-      color: #9ca3af;
-      text-align: center;
-    }
-    .actions-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-top: 4px;
-    }
-    .actions-row a {
-      flex: 1;
-      text-align: center;
-    }
-  </style>
+    <meta charset="utf-8">
+    <title>Fahrten Abrechnung</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <style>
+        :root {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            color-scheme: light dark;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top left, #dbeafe 0, #eef2ff 40%, #e5e7eb 100%);
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(14px);
+            border-radius: 20px;
+            box-shadow: 0 18px 40px rgba(15,23,42,0.18);
+            padding: 16px 16px 12px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            margin-bottom: 12px;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: 0.02em;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .section-title {
+            margin: 10px 0 4px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #4b5563;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-size: 13px;
+            color: #4b5563;
+            display: block;
+            margin-top: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px 8px;
+            margin-top: 3px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            outline: none;
+            background: #f9fafb;
+        }
+
+            input:focus,
+            select:focus {
+                border-color: #2563eb;
+                box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
+                background: #ffffff;
+            }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+            .checkbox-row input {
+                width: auto;
+                margin: 0;
+            }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+            user-select: none;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(37,99,235,0.35);
+            width: 100%;
+            margin-top: 10px;
+        }
+
+            .btn-primary:active {
+                transform: translateY(1px);
+                box-shadow: 0 6px 14px rgba(37,99,235,0.4);
+            }
+
+        .btn-ghost {
+            background: transparent;
+            color: #ef4444;
+        }
+
+        .btn-outline {
+            border: 1px solid #2563eb;
+            color: #2563eb;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+            justify-content: flex-end;
+        }
+
+            .btn-row .btn {
+                flex: 1;
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+        .fahrten-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .fahrt-item {
+            padding: 6px 4px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .fahrt-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .fahrt-adresse {
+            font-weight: 600;
+            color: #111827;
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .fahrt-verg {
+            font-weight: 600;
+            color: #111827;
+            white-space: nowrap;
+        }
+
+        .fahrt-meta {
+            margin-top: 2px;
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 1px 7px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .pill-online {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .pill-bar {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .pill-distance {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .placeholder {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            padding: 4px 0;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .summary-label {
+            color: #4b5563;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .summary-value-strong {
+            font-size: 15px;
+        }
+
+        .summary-green {
+            color: #059669;
+        }
+
+        .summary-red {
+            color: #b91c1c;
+        }
+
+        .footer-note {
+            font-size: 11px;
+            text-align: center;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .money {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
 </head>
 <body>
-  <!-- App root -->
-  <div id="app">
-    <!-- Hauptansicht -->
-    <div class="view view-main">
-      <div class="page">
-        <!-- Navbar -->
-        <div class="navbar">
-          <div class="navbar-inner">
-            <div class="title">Fahrten Abrechnung</div>
-          </div>
+    <div class="app">
+        <div class="header">
+            <div class="title">Fahrten & Stunden</div>
+            <div class="subtitle">
+                Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.
+            </div>
         </div>
 
-        <div class="page-content">
-          <!-- Header -->
-          <div class="app-header">
-            <div class="app-header-title">Fahrten & Stunden</div>
-            <div class="app-header-subtitle">
-              Erfasse deine Fahrten und sieh direkt, was dir noch ausgezahlt werden muss.
+        <!-- Neue Fahrt -->
+        <div class="section-title">Neue Fahrt</div>
+        <div class="card">
+            <label>
+                Adresse
+                <input type="text" id="adresse" placeholder="z.B. Musterstraße 1, Hannover">
+            </label>
+
+            <label>
+                Zahlungsart
+                <select id="zahlungsart">
+                    <option value="online">Online</option>
+                    <option value="bar">Bar</option>
+                </select>
+            </label>
+
+            <label>
+                Bargeldbetrag (€)
+                <input type="number" id="bargeld" step="0.01" min="0" placeholder="nur bei Barzahlung" disabled>
+            </label>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="ueber5km">
+                <span>&gt; 5 km von der Arbeit entfernt (+0,50 €)</span>
             </div>
-          </div>
 
-          <!-- Abschnitt: Neue Fahrt -->
-          <div class="block-title">Neue Fahrt</div>
-          <div class="card">
-            <div class="card-content card-content-padding">
-              <div class="list no-hairlines-md">
-                <ul>
-                  <li class="item-content item-input">
-                    <div class="item-inner">
-                      <div class="item-title item-label">Adresse</div>
-                      <div class="item-input-wrap">
-                        <input type="text" id="adresse" placeholder="z.B. Musterstraße 1, Hannover">
-                      </div>
-                    </div>
-                  </li>
+            <button class="btn btn-primary" id="addFahrtBtn">Fahrt hinzufügen</button>
+        </div>
 
-                  <li class="item-content item-input">
-                    <div class="item-inner">
-                      <div class="item-title item-label">Zahlungsart</div>
-                      <div class="item-input-wrap">
-                        <select id="zahlungsart">
-                          <option value="online">Online</option>
-                          <option value="bar">Bar</option>
-                        </select>
-                      </div>
-                    </div>
-                  </li>
+        <!-- Erfasste Fahrten -->
+        <div class="section-title">Erfasste Fahrten</div>
+        <div class="card">
+            <ul id="fahrtenListe" class="fahrten-list">
+                <li class="placeholder">Noch keine Fahrten erfasst.</li>
+            </ul>
+        </div>
 
-                  <li class="item-content item-input">
-                    <div class="item-inner">
-                      <div class="item-title item-label">Bargeldbetrag (€)</div>
-                      <div class="item-input-wrap">
-                        <input type="number" id="bargeld" step="0.01" min="0" placeholder="nur bei Barzahlung" disabled>
-                      </div>
-                    </div>
-                  </li>
+        <!-- Abrechnung -->
+        <div class="section-title">Abrechnung</div>
+        <div class="card">
+            <label>
+                Stunden gearbeitet
+                <input type="number" id="stunden" step="0.25" min="0" value="0">
+            </label>
 
-                  <li>
-                    <label class="item-checkbox item-content">
-                      <input type="checkbox" id="ueber5km">
-                      <i class="icon icon-checkbox"></i>
-                      <div class="item-inner">
-                        <div class="item-title">&gt; 5 km von der Arbeit entfernt (+0,50&nbsp;€)</div>
-                      </div>
-                    </label>
-                  </li>
-                </ul>
-              </div>
+            <label>
+                Stundenlohn (€)
+                <input type="number" id="stundenlohn" step="0.01" min="0" value="7.5">
+            </label>
 
-              <div class="block" style="margin-top: 8px; margin-bottom: 0;">
-                <a class="button button-fill color-primary" id="addFahrtBtn">Fahrt hinzufügen</a>
-              </div>
-            </div>
-          </div>
-
-          <!-- Abschnitt: Fahrtenliste -->
-          <div class="block-title">Erfasste Fahrten</div>
-          <div class="card fahrten-card">
-            <div class="card-content">
-              <div class="list media-list" id="fahrtenListe">
-                <!-- Einträge werden per JS eingefügt -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Abschnitt: Abrechnung -->
-          <div class="block-title">Abrechnung</div>
-          <div class="card">
-            <div class="card-content card-content-padding">
-
-              <div class="list no-hairlines-md">
-                <ul>
-                  <li class="item-content item-input">
-                    <div class="item-inner">
-                      <div class="item-title item-label">Stunden gearbeitet</div>
-                      <div class="item-input-wrap">
-                        <input type="number" id="stunden" step="0.25" min="0" value="0">
-                      </div>
-                    </div>
-                  </li>
-
-                  <li class="item-content item-input">
-                    <div class="item-inner">
-                      <div class="item-title item-label">Stundenlohn (€)</div>
-                      <div class="item-input-wrap">
-                        <input type="number" id="stundenlohn" step="0.01" min="0" value="7.5">
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="block" style="margin-top: 8px;">
+            <div style="margin-top:8px;">
                 <div class="summary-row">
-                  <div class="summary-label">Anzahl Fahrten</div>
-                  <div class="summary-value" id="anzahlFahrten">0</div>
+                    <div class="summary-label">Anzahl Fahrten</div>
+                    <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
                 <div class="summary-row">
-                  <div class="summary-label">Fahrten &gt; 5 km</div>
-                  <div class="summary-value" id="anzahlÜber5">0</div>
+                    <div class="summary-label">Fahrten &gt; 5 km</div>
+                    <div class="summary-value" id="anzahlÜber5">0</div>
                 </div>
                 <div class="summary-row">
-                  <div class="summary-label">Summe Bargeld</div>
-                  <div class="summary-value money" id="summeBargeld">0,00&nbsp;€</div>
+                    <div class="summary-label">Summe Bargeld</div>
+                    <div class="summary-value money" id="summeBargeld">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                  <div class="summary-label">Lohn Stunden</div>
-                  <div class="summary-value money" id="lohnStunden">0,00&nbsp;€</div>
+                    <div class="summary-label">Lohn Stunden</div>
+                    <div class="summary-value money" id="lohnStunden">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                  <div class="summary-label">Vergütung Fahrten</div>
-                  <div class="summary-value money" id="lohnFahrten">0,00&nbsp;€</div>
+                    <div class="summary-label">Vergütung Fahrten</div>
+                    <div class="summary-value money" id="lohnFahrten">0,00 €</div>
                 </div>
                 <hr>
                 <div class="summary-row">
-                  <div class="summary-label">Gesamt (Stunden + Fahrten)</div>
-                  <div class="summary-value money summary-value-strong" id="gesamtBrutto">0,00&nbsp;€</div>
+                    <div class="summary-label">Gesamt (Stunden + Fahrten)</div>
+                    <div class="summary-value money summary-value-strong" id="gesamtBrutto">0,00 €</div>
                 </div>
                 <div class="summary-row">
-                  <div class="summary-label">Noch auszuzahlen (− Bargeld)</div>
-                  <div class="summary-value money summary-value-strong summary-value-green" id="nettoAuszahlung">0,00&nbsp;€</div>
+                    <div class="summary-label">Noch auszuzahlen (− Bargeld)</div>
+                    <div class="summary-value money summary-value-strong summary-green" id="nettoAuszahlung">0,00 €</div>
                 </div>
-              </div>
-
-              <div class="block actions-row">
-                <a href="#" id="resetBtn" style="font-size:12px; color:#ef4444;">Alles zurücksetzen</a>
-                <a href="#" id="exportPdfBtn" style="font-size:12px; color:#2563eb;">Als PDF exportieren</a>
-              </div>
-
             </div>
-          </div>
 
-        </div> <!-- page-content -->
-
-        <!-- Toolbar unten -->
-        <div class="toolbar toolbar-bottom">
-          <div class="toolbar-inner">
-            <span>Grundvergütung: 1,50 € pro Fahrt · &gt;5 km: +0,50 €</span>
-          </div>
+            <div class="btn-row">
+                <button class="btn btn-ghost" id="resetBtn">Alles zurücksetzen</button>
+                <button class="btn btn-outline" id="exportPdfBtn">Als PDF exportieren</button>
+            </div>
         </div>
 
-      </div>
+        <div class="footer-note">
+            Grundvergütung: 1,50 € pro Fahrt · &gt;5 km: +0,50 €
+        </div>
     </div>
-  </div>
 
-  <!-- Framework7 JS -->
-  <script src="https://unpkg.com/framework7/framework7-bundle.min.js"></script>
-  <!-- jsPDF (für PDF-Export) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF (optional, nur für PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
-  <script>
-    // Framework7 App initialisieren
-    var app = new Framework7({
-      root: '#app',
-      theme: 'ios'
-    });
+    <script>
+        const BASIS_PRO_FAhrt = 1.5;
+        const BONUS_UEBER_5KM = 0.5;
+        const STORAGE_KEY = 'fahrtenApp_v2';
 
-    const { jsPDF } = window.jspdf;
+        let fahrten = [];
 
-    // Konstante Werte
-    const BASIS_PRO_FAhrt = 1.5;
-    const BONUS_UEBER_5KM = 0.5;
-    const STORAGE_KEY = 'fahrtenAppData_v1';
+        const adresseInput = document.getElementById('adresse');
+        const zahlungsartSelect = document.getElementById('zahlungsart');
+        const bargeldInput = document.getElementById('bargeld');
+        const ueber5kmCheckbox = document.getElementById('ueber5km');
+        const addFahrtBtn = document.getElementById('addFahrtBtn');
+        const fahrtenListe = document.getElementById('fahrtenListe');
 
-    // State
-    let fahrten = [];
+        const stundenInput = document.getElementById('stunden');
+        const stundenlohnInput = document.getElementById('stundenlohn');
+        const anzahlFahrtenSpan = document.getElementById('anzahlFahrten');
+        const anzahlÜber5Span = document.getElementById('anzahlÜber5');
+        const summeBargeldSpan = document.getElementById('summeBargeld');
+        const lohnStundenSpan = document.getElementById('lohnStunden');
+        const lohnFahrtenSpan = document.getElementById('lohnFahrten');
+        const gesamtBruttoSpan = document.getElementById('gesamtBrutto');
+        const nettoAuszahlungSpan = document.getElementById('nettoAuszahlung');
+        const resetBtn = document.getElementById('resetBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
 
-    // Elemente
-    const adresseInput        = document.getElementById('adresse');
-    const zahlungsartSelect   = document.getElementById('zahlungsart');
-    const bargeldInput        = document.getElementById('bargeld');
-    const ueber5kmCheckbox    = document.getElementById('ueber5km');
-    const addFahrtBtn         = document.getElementById('addFahrtBtn');
-    const fahrtenListe        = document.getElementById('fahrtenListe');
-
-    const stundenInput        = document.getElementById('stunden');
-    const stundenlohnInput    = document.getElementById('stundenlohn');
-
-    const anzahlFahrtenSpan   = document.getElementById('anzahlFahrten');
-    const anzahlÜber5Span     = document.getElementById('anzahlÜber5');
-    const summeBargeldSpan    = document.getElementById('summeBargeld');
-    const lohnStundenSpan     = document.getElementById('lohnStunden');
-    const lohnFahrtenSpan     = document.getElementById('lohnFahrten');
-    const gesamtBruttoSpan    = document.getElementById('gesamtBrutto');
-    const nettoAuszahlungSpan = document.getElementById('nettoAuszahlung');
-    const resetBtn            = document.getElementById('resetBtn');
-    const exportPdfBtn        = document.getElementById('exportPdfBtn');
-
-    function parseEuro(value) {
-      if (value === null || value === undefined) return 0;
-      if (value === '') return 0;
-      return parseFloat(String(value).replace(',', '.')) || 0;
-    }
-
-    function formatEuro(num) {
-      return num.toFixed(2).replace('.', ',') + ' €';
-    }
-
-    // LocalStorage laden
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        if (Array.isArray(data.fahrten)) {
-          fahrten = data.fahrten;
+        function parseEuro(value) {
+            if (value === null || value === undefined || value === '') return 0;
+            return parseFloat(String(value).replace(',', '.')) || 0;
         }
-        if (typeof data.stunden === 'number') {
-          stundenInput.value = data.stunden;
+
+        function formatEuro(num) {
+            return num.toFixed(2).replace('.', ',') + ' €';
         }
-        if (typeof data.stundenlohn === 'number') {
-          stundenlohnInput.value = data.stundenlohn;
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (Array.isArray(data.fahrten)) fahrten = data.fahrten;
+                if (typeof data.stunden === 'number') stundenInput.value = data.stunden;
+                if (typeof data.stundenlohn === 'number') stundenlohnInput.value = data.stundenlohn;
+            } catch (e) {
+                console.error('Fehler beim Laden aus LocalStorage', e);
+            }
         }
-      } catch (e) {
-        console.error('Fehler beim Laden aus LocalStorage', e);
-      }
-    }
 
-    // LocalStorage speichern
-    function saveState() {
-      const data = {
-        fahrten,
-        stunden: parseEuro(stundenInput.value),
-        stundenlohn: parseEuro(stundenlohnInput.value)
-      };
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } catch (e) {
-        console.error('Fehler beim Speichern in LocalStorage', e);
-      }
-    }
+        function saveState() {
+            const data = {
+                fahrten,
+                stunden: parseEuro(stundenInput.value),
+                stundenlohn: parseEuro(stundenlohnInput.value)
+            };
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) {
+                console.error('Fehler beim Speichern in LocalStorage', e);
+            }
+        }
 
-    zahlungsartSelect.addEventListener('change', () => {
-      if (zahlungsartSelect.value === 'bar') {
-        bargeldInput.disabled = false;
-      } else {
-        bargeldInput.disabled = true;
-        bargeldInput.value = '';
-      }
-    });
+        zahlungsartSelect.addEventListener('change', () => {
+            if (zahlungsartSelect.value === 'bar') {
+                bargeldInput.disabled = false;
+            } else {
+                bargeldInput.disabled = true;
+                bargeldInput.value = '';
+            }
+        });
 
-    addFahrtBtn.addEventListener('click', () => {
-      const adresse   = adresseInput.value.trim();
-      const zahlungsart = zahlungsartSelect.value;
-      const ueber5km  = ueber5kmCheckbox.checked;
+        addFahrtBtn.addEventListener('click', () => {
+            const adresse = adresseInput.value.trim();
+            const zahlungsart = zahlungsartSelect.value;
+            const ueber5km = ueber5kmCheckbox.checked;
 
-      if (!adresse) {
-        app.dialog.alert('Bitte eine Adresse eingeben.');
-        return;
-      }
+            if (!adresse) {
+                alert('Bitte eine Adresse eingeben.');
+                return;
+            }
 
-      let bargeld = 0;
-      if (zahlungsart === 'bar') {
-        bargeld = parseEuro(bargeldInput.value);
-      }
+            let bargeld = 0;
+            if (zahlungsart === 'bar') {
+                bargeld = parseEuro(bargeldInput.value);
+            }
 
-      const vergütung = BASIS_PRO_FAhrt + (ueber5km ? BONUS_UEBER_5KM : 0);
+            const vergütung = BASIS_PRO_FAhrt + (ueber5km ? BONUS_UEBER_5KM : 0);
 
-      fahrten.push({
-        adresse,
-        zahlungsart,
-        bargeld,
-        ueber5km,
-        vergütung
-      });
+            fahrten.push({ adresse, zahlungsart, bargeld, ueber5km, vergütung });
 
-      // Eingaben zurücksetzen
-      adresseInput.value = '';
-      ueber5kmCheckbox.checked = false;
-      if (zahlungsart === 'bar') {
-        bargeldInput.value = '';
-      }
+            adresseInput.value = '';
+            ueber5kmCheckbox.checked = false;
+            if (zahlungsart === 'bar') bargeldInput.value = '';
 
-      renderFahrten();
-      berechneZusammenfassung();
-      saveState();
-    });
+            renderFahrten();
+            berechneZusammenfassung();
+            saveState();
+        });
 
-    [stundenInput, stundenlohnInput].forEach(el => {
-      el.addEventListener('input', () => {
-        berechneZusammenfassung();
-        saveState();
-      });
-    });
+        resetBtn.addEventListener('click', () => {
+            if (!confirm('Wirklich alle Daten löschen?')) return;
+            fahrten = [];
+            stundenInput.value = '0';
+            stundenlohnInput.value = '7.5';
+            renderFahrten();
+            berechneZusammenfassung();
+            saveState();
+        });
 
-    resetBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      app.dialog.confirm('Wirklich alle Daten löschen?', 'Zurücksetzen', () => {
-        fahrten = [];
-        stundenInput.value = '0';
-        stundenlohnInput.value = '7.5';
+        [stundenInput, stundenlohnInput].forEach(el => {
+            el.addEventListener('input', () => {
+                berechneZusammenfassung();
+                saveState();
+            });
+        });
+
+        exportPdfBtn.addEventListener('click', () => {
+            if (fahrten.length === 0) {
+                alert('Es sind noch keine Fahrten erfasst.');
+                return;
+            }
+            exportToPdf();
+        });
+
+        function renderFahrten() {
+            if (fahrten.length === 0) {
+                fahrtenListe.innerHTML = '<li class="placeholder">Noch keine Fahrten erfasst.</li>';
+                return;
+            }
+
+            fahrtenListe.innerHTML = '';
+            fahrten.forEach((f, index) => {
+                const li = document.createElement('li');
+                li.className = 'fahrt-item';
+
+                const header = document.createElement('div');
+                header.className = 'fahrt-header';
+
+                const addr = document.createElement('div');
+                addr.className = 'fahrt-adresse';
+                addr.textContent = (index + 1) + '. ' + f.adresse;
+
+                const verg = document.createElement('div');
+                verg.className = 'fahrt-verg money';
+                verg.textContent = f.vergütung.toFixed(2) + ' €';
+
+                header.appendChild(addr);
+                header.appendChild(verg);
+
+                const meta = document.createElement('div');
+                meta.className = 'fahrt-meta';
+
+                const pillZ = document.createElement('span');
+                pillZ.className = 'pill ' + (f.zahlungsart === 'bar' ? 'pill-bar' : 'pill-online');
+                pillZ.textContent = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
+                meta.appendChild(pillZ);
+
+                if (f.ueber5km) {
+                    const pillD = document.createElement('span');
+                    pillD.className = 'pill pill-distance';
+                    pillD.textContent = '>5 km';
+                    meta.appendChild(pillD);
+                }
+
+                if (f.bargeld > 0) {
+                    const bargeldSpan = document.createElement('span');
+                    bargeldSpan.textContent = '· Bargeld: ' + f.bargeld.toFixed(2) + ' €';
+                    meta.appendChild(bargeldSpan);
+                }
+
+                li.appendChild(header);
+                li.appendChild(meta);
+                fahrtenListe.appendChild(li);
+            });
+        }
+
+        function berechneZusammenfassung() {
+            const anzahl = fahrten.length;
+            const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
+            const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
+            const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+
+            const stunden = parseEuro(stundenInput.value);
+            const stundenlohn = parseEuro(stundenlohnInput.value);
+
+            const lohnStunden = stunden * stundenlohn;
+            const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
+            const nettoAuszahlung = gesamtBrutto - summeBargeld;
+
+            anzahlFahrtenSpan.textContent = anzahl;
+            anzahlÜber5Span.textContent = anzahlÜber5;
+            summeBargeldSpan.textContent = formatEuro(summeBargeld);
+            lohnStundenSpan.textContent = formatEuro(lohnStunden);
+            lohnFahrtenSpan.textContent = formatEuro(summeFahrtenVergütung);
+            gesamtBruttoSpan.textContent = formatEuro(gesamtBrutto);
+            nettoAuszahlungSpan.textContent = formatEuro(nettoAuszahlung);
+
+            nettoAuszahlungSpan.classList.remove('summary-green', 'summary-red');
+            if (nettoAuszahlung >= 0) {
+                nettoAuszahlungSpan.classList.add('summary-green');
+            } else {
+                nettoAuszahlungSpan.classList.add('summary-red');
+            }
+        }
+
+        function exportToPdf() {
+            if (!window.jspdf) {
+                alert('PDF-Export ist aktuell nicht verfügbar (jsPDF nicht geladen).');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const marginLeft = 15;
+            let y = 15;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('de-DE');
+
+            doc.setFontSize(16);
+            doc.text('Fahrten-Abrechnung', marginLeft, y);
+            y += 7;
+
+            doc.setFontSize(11);
+            doc.text('Datum: ' + dateStr, marginLeft, y);
+            y += 8;
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Nr', marginLeft, y);
+            doc.text('Adresse', marginLeft + 10, y);
+            doc.text('Zahlung', marginLeft + 90, y);
+            doc.text('Bargeld', marginLeft + 120, y);
+            doc.text('>5 km', marginLeft + 145, y);
+            doc.text('Vergütung', marginLeft + 165, y);
+            y += 4;
+            doc.line(marginLeft, y, 200 - marginLeft, y);
+            y += 4;
+            doc.setFont('helvetica', 'normal');
+
+            fahrten.forEach((f, index) => {
+                if (y > 260) {
+                    doc.addPage();
+                    y = 15;
+                }
+                const nr = String(index + 1);
+                let adrText = f.adresse;
+                if (adrText.length > 40) adrText = adrText.slice(0, 37) + '...';
+                const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
+                const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
+                const dist = f.ueber5km ? 'Ja' : 'Nein';
+                const verg = f.vergütung.toFixed(2) + ' €';
+
+                doc.text(nr, marginLeft, y);
+                doc.text(adrText, marginLeft + 10, y);
+                doc.text(zahlung, marginLeft + 90, y);
+                doc.text(bargeld, marginLeft + 120, y);
+                doc.text(dist, marginLeft + 145, y);
+                doc.text(verg, marginLeft + 165, y);
+                y += 5;
+            });
+
+            y += 6;
+            if (y > 260) {
+                doc.addPage();
+                y = 15;
+            }
+
+            const anzahl = fahrten.length;
+            const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
+            const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
+            const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+            const stunden = parseEuro(stundenInput.value);
+            const stundenlohn = parseEuro(stundenlohnInput.value);
+            const lohnStunden = stunden * stundenlohn;
+            const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
+            const nettoAuszahlung = gesamtBrutto - summeBargeld;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text('Zusammenfassung', marginLeft, y);
+            y += 6;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+
+            const lines = [
+                'Anzahl Fahrten: ' + anzahl,
+                'Fahrten > 5 km: ' + anzahlÜber5,
+                'Stunden gearbeitet: ' + stunden + ' h',
+                'Stundenlohn: ' + stundenlohn.toFixed(2) + ' €',
+                'Lohn Stunden: ' + lohnStunden.toFixed(2) + ' €',
+                'Vergütung Fahrten: ' + summeFahrtenVergütung.toFixed(2) + ' €',
+                'Summe Bargeld: ' + summeBargeld.toFixed(2) + ' €',
+                'Gesamt (Stunden + Fahrten): ' + gesamtBrutto.toFixed(2) + ' €',
+                'Noch auszuzahlen (− Bargeld): ' + nettoAuszahlung.toFixed(2) + ' €'
+            ];
+
+            lines.forEach(line => {
+                doc.text(line, marginLeft, y);
+                y += 5;
+            });
+
+            const fileName = 'fahrten_' + today.toISOString().slice(0, 10) + '.pdf';
+            doc.save(fileName);
+        }
+
+        // Initial
+        loadState();
         renderFahrten();
         berechneZusammenfassung();
-        saveState();
-      });
-    });
-
-    exportPdfBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (fahrten.length === 0) {
-        app.dialog.alert('Es sind noch keine Fahrten erfasst.', 'PDF Export');
-        return;
-      }
-      exportToPdf();
-    });
-
-    function renderFahrten() {
-      if (fahrten.length === 0) {
-        fahrtenListe.innerHTML = '<div class="no-fahrten-placeholder">Noch keine Fahrten erfasst.</div>';
-        return;
-      }
-
-      let html = '<ul>';
-      fahrten.forEach((f, index) => {
-        const pillZahlungClass = f.zahlungsart === 'bar' ? 'pill pill-bar' : 'pill pill-online';
-        const pillZahlungText = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
-
-        html += `
-          <li>
-            <div class="item-content">
-              <div class="item-inner">
-                <div class="item-title-row">
-                  <div class="item-title">${index + 1}. ${f.adresse}</div>
-                  <div class="item-after money">${f.vergütung.toFixed(2)} €</div>
-                </div>
-                <div class="item-subtitle">
-                  <span class="${pillZahlungClass}">${pillZahlungText}</span>
-                  ${f.ueber5km ? '<span class="pill pill-distance">&gt;5 km</span>' : ''}
-                  ${f.bargeld > 0 ? ' · Bargeld: ' + f.bargeld.toFixed(2) + ' €' : ''}
-                </div>
-              </div>
-            </div>
-          </li>
-        `;
-      });
-      html += '</ul>';
-      fahrtenListe.innerHTML = html;
-    }
-
-    function berechneZusammenfassung() {
-      const anzahl = fahrten.length;
-      const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
-      const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
-      const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
-
-      const stunden    = parseEuro(stundenInput.value);
-      const stundenlohn = parseEuro(stundenlohnInput.value);
-
-      const lohnStunden = stunden * stundenlohn;
-      const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
-      const nettoAuszahlung = gesamtBrutto - summeBargeld;
-
-      anzahlFahrtenSpan.textContent    = anzahl;
-      anzahlÜber5Span.textContent      = anzahlÜber5;
-      summeBargeldSpan.innerHTML       = formatEuro(summeBargeld);
-      lohnStundenSpan.innerHTML        = formatEuro(lohnStunden);
-      lohnFahrtenSpan.innerHTML        = formatEuro(summeFahrtenVergütung);
-      gesamtBruttoSpan.innerHTML       = formatEuro(gesamtBrutto);
-
-      nettoAuszahlungSpan.innerHTML    = formatEuro(nettoAuszahlung);
-      nettoAuszahlungSpan.classList.remove('summary-value-green', 'summary-value-red');
-      if (nettoAuszahlung >= 0) {
-        nettoAuszahlungSpan.classList.add('summary-value-green');
-      } else {
-        nettoAuszahlungSpan.classList.add('summary-value-red');
-      }
-    }
-
-    // PDF-Export
-    function exportToPdf() {
-      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-      const marginLeft = 15;
-      let y = 15;
-
-      const today = new Date();
-      const dateStr = today.toLocaleDateString('de-DE');
-
-      doc.setFontSize(16);
-      doc.text('Fahrten-Abrechnung', marginLeft, y);
-      y += 7;
-
-      doc.setFontSize(11);
-      doc.text('Datum: ' + dateStr, marginLeft, y);
-      y += 8;
-
-      // Tabelle Kopf
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Nr', marginLeft, y);
-      doc.text('Adresse', marginLeft + 10, y);
-      doc.text('Zahlung', marginLeft + 90, y);
-      doc.text('Bargeld', marginLeft + 120, y);
-      doc.text('>5 km', marginLeft + 145, y);
-      doc.text('Vergütung', marginLeft + 165, y);
-      y += 4;
-
-      doc.setLineWidth(0.1);
-      doc.line(marginLeft, y, 200 - marginLeft, y);
-      y += 4;
-
-      doc.setFont('helvetica', 'normal');
-
-      fahrten.forEach((f, index) => {
-        if (y > 260) { // neue Seite, wenn es unten eng wird
-          doc.addPage();
-          y = 15;
-        }
-        const nr = String(index + 1);
-        const adresse = f.adresse;
-        const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
-        const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
-        const dist = f.ueber5km ? 'Ja' : 'Nein';
-        const verg = f.vergütung.toFixed(2) + ' €';
-
-        doc.text(nr, marginLeft, y);
-        // Adresse evtl. kürzen
-        const maxAdresseLen = 40;
-        let adrText = adresse;
-        if (adresse.length > maxAdresseLen) {
-          adrText = adresse.substring(0, maxAdresseLen - 3) + '...';
-        }
-        doc.text(adrText, marginLeft + 10, y);
-        doc.text(zahlung, marginLeft + 90, y);
-        doc.text(bargeld, marginLeft + 120, y);
-        doc.text(dist, marginLeft + 145, y);
-        doc.text(verg, marginLeft + 165, y);
-        y += 5;
-      });
-
-      // Zusammenfassung
-      y += 6;
-      if (y > 260) {
-        doc.addPage();
-        y = 15;
-      }
-
-      const anzahl = fahrten.length;
-      const anzahlÜber5 = fahrten.filter(f => f.ueber5km).length;
-      const summeBargeld = fahrten.reduce((sum, f) => sum + f.bargeld, 0);
-      const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
-      const stunden = parseEuro(stundenInput.value);
-      const stundenlohn = parseEuro(stundenlohnInput.value);
-      const lohnStunden = stunden * stundenlohn;
-      const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
-      const nettoAuszahlung = gesamtBrutto - summeBargeld;
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.text('Zusammenfassung', marginLeft, y);
-      y += 6;
-
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      const lines = [
-        'Anzahl Fahrten: ' + anzahl,
-        'Fahrten > 5 km: ' + anzahlÜber5,
-        'Stunden gearbeitet: ' + stunden + ' h',
-        'Stundenlohn: ' + stundenlohn.toFixed(2) + ' €',
-        'Lohn Stunden: ' + lohnStunden.toFixed(2) + ' €',
-        'Vergütung Fahrten: ' + summeFahrtenVergütung.toFixed(2) + ' €',
-        'Summe Bargeld: ' + summeBargeld.toFixed(2) + ' €',
-        'Gesamt (Stunden + Fahrten): ' + gesamtBrutto.toFixed(2) + ' €',
-        'Noch auszuzahlen (− Bargeld): ' + nettoAuszahlung.toFixed(2) + ' €'
-      ];
-
-      lines.forEach(line => {
-        doc.text(line, marginLeft, y);
-        y += 5;
-      });
-
-      const fileName = 'fahrten_' + today.toISOString().slice(0,10) + '.pdf';
-      doc.save(fileName);
-    }
-
-    // Initial: State laden, dann UI bauen
-    loadState();
-    renderFahrten();
-    berechneZusammenfassung();
-  </script>
+    </script>
 </body>
 </html>
