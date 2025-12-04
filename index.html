@@ -619,9 +619,7 @@
             <label>
                 <span id="labelAddressText">Adresse</span>
                 <input type="text" id="adresse"
-                       list="addressSuggestions"
                        placeholder="bei Online nicht nötig">
-                <datalist id="addressSuggestions"></datalist>
             </label>
 
             <label>
@@ -1032,25 +1030,6 @@
             applyTheme(theme);
         }
 
-        function fillAddressDatalist() {
-            const dl = document.getElementById('addressSuggestions');
-            if (!dl) return;
-
-            dl.innerHTML = '';
-            KNOWN_ADDRESSES.forEach(addr => {
-                const opt = document.createElement('option');
-                opt.value = addr;
-                dl.appendChild(opt);
-            });
-        }
-
-
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.contains('dark');
-                applyTheme(isDark ? 'light' : 'dark');
-            });
-        }
 
         // Language handling
         function updatePlaceholders() {
@@ -1195,21 +1174,6 @@
             }
             updatePlaceholders();
         });
-
-        adresseInput.addEventListener("input", () => {
-            const query = adresseInput.value;
-
-            // alten Timer abbrechen
-            if (addressFetchTimeout) {
-                clearTimeout(addressFetchTimeout);
-            }
-
-            // kleinen Delay, damit nicht bei jedem Tastendruck sofort gefetcht wird
-            addressFetchTimeout = setTimeout(() => {
-                fetchOsmSuggestions(query);
-            }, 300);
-        });
-
 
         entfernungInput.addEventListener('input', () => {
             const dist = parseEuro(entfernungInput.value);
@@ -1900,85 +1864,14 @@
 
 
 
-        // Initial
         initTheme();
         initLanguage();
         loadState();
         renderFahrten();
         berechneZusammenfassung();
         zahlungsartSelect.dispatchEvent(new Event('change'));
-
-        checkForUpdate();   // ← HIER wird die Update-Prüfung gestartet
-        fillAddressDatalist();
+        checkForUpdate();
         fillAddressDatalistStatic();
-
-        let addressFetchTimeout = null;
-
-        async function fetchOsmSuggestions(query) {
-            const dl = document.getElementById("addressSuggestions");
-            if (!dl) return;
-
-            // zuerst unsere eigenen (KNOWN_ADDRESSES) passend anzeigen
-            fillAddressDatalistStatic(query);
-
-            if (!query || query.trim().length < 3) {
-                // bei kurzen Eingaben nur die statischen Vorschläge
-                return;
-            }
-
-            const q = query.trim();
-
-            const params = new URLSearchParams({
-                q: q + ", Hannover",
-                format: "json",
-                addressdetails: "1",
-                limit: "1",      // ⬅️ nur EIN Ergebnis von Nominatim holen
-                countrycodes: "de"
-            });
-
-            try {
-                const resp = await fetch(
-                    "https://nominatim.openstreetmap.org/search?" + params.toString(),
-                    { headers: { "Accept": "application/json" } }
-                );
-
-                if (!resp.ok) {
-                    console.warn("Nominatim-Request fehlgeschlagen", resp.status);
-                    return;
-                }
-
-                const data = await resp.json();
-                if (!Array.isArray(data) || data.length === 0) return;
-
-                const item = data[0];
-
-                // Versuche den Straßennamen aus address.road zu holen
-                const addr = item.address || {};
-                const road =
-                    addr.road ||
-                    addr.pedestrian ||
-                    addr.footway ||
-                    (item.display_name ? item.display_name.split(",")[0] : "");
-
-                // Wenn du NUR die Straße willst:
-                let label = road || "";
-
-                // Falls du Straße + Stadtteil willst, dann stattdessen:
-                // const cityPart = addr.suburb || addr.city_district || addr.city || addr.town || "";
-                // let label = road;
-                // if (cityPart) label += ", " + cityPart;
-
-                if (!label) return;
-
-                const opt = document.createElement("option");
-                opt.value = label;      // ⬅️ nur der kurze Straßen-Text
-                dl.appendChild(opt);
-
-            } catch (err) {
-                console.warn("Fehler bei Nominatim-Fetch:", err);
-            }
-        }
-
 
 
     </script>
