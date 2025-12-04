@@ -1028,6 +1028,16 @@
             applyTheme(theme);
         }
 
+        // Dark-Mode per Button umschalten
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                applyTheme(newTheme);
+            });
+        }
+
+
         // Language handling
         function updatePlaceholders() {
             if (zahlungsartSelect.value === 'bar') {
