@@ -1196,6 +1196,21 @@
             updatePlaceholders();
         });
 
+        adresseInput.addEventListener("input", () => {
+            const query = adresseInput.value;
+
+            // alten Timer abbrechen
+            if (addressFetchTimeout) {
+                clearTimeout(addressFetchTimeout);
+            }
+
+            // kleinen Delay, damit nicht bei jedem Tastendruck sofort gefetcht wird
+            addressFetchTimeout = setTimeout(() => {
+                fetchOsmSuggestions(query);
+            }, 300);
+        });
+
+
         entfernungInput.addEventListener('input', () => {
             const dist = parseEuro(entfernungInput.value);
             if (dist >= 8) {
@@ -1358,6 +1373,24 @@
             berechneZusammenfassung();
             saveState();
         }
+
+        function fillAddressDatalistStatic(filterText = "") {
+            const dl = document.getElementById("addressSuggestions");
+            if (!dl) return;
+
+            dl.innerHTML = "";
+
+            const ft = filterText.toLowerCase();
+
+            KNOWN_ADDRESSES.forEach(addr => {
+                if (!ft || addr.toLowerCase().includes(ft)) {
+                    const opt = document.createElement("option");
+                    opt.value = addr;
+                    dl.appendChild(opt);
+                }
+            });
+        }
+
 
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
@@ -1877,6 +1910,60 @@
 
         checkForUpdate();   // ← HIER wird die Update-Prüfung gestartet
         fillAddressDatalist();
+        fillAddressDatalistStatic();
+
+        let addressFetchTimeout = null;
+
+        async function fetchOsmSuggestions(query) {
+            const dl = document.getElementById("addressSuggestions");
+            if (!dl) return;
+
+            // Erst unsere statischen Vorschläge passend zum Filter hinzufügen
+            fillAddressDatalistStatic(query);
+
+            // Wenn Query sehr kurz ist, nur statische anzeigen und fertig
+            if (!query || query.trim().length < 3) {
+                return;
+            }
+
+            const q = query.trim();
+
+            // Nominatim-URL – Fokus auf Hannover (Ahlem/Linden Umgebung)
+            const params = new URLSearchParams({
+                q: q + ", Hannover",
+                format: "json",
+                addressdetails: "1",
+                limit: "5",
+                countrycodes: "de"
+                // Man könnte hier auch viewbox/bounded nutzen, aber für dich reicht der Stadtbezug gut aus
+            });
+
+            try {
+                const resp = await fetch("https://nominatim.openstreetmap.org/search?" + params.toString(), {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                });
+
+                if (!resp.ok) {
+                    console.warn("Nominatim-Request fehlgeschlagen", resp.status);
+                    return;
+                }
+
+                const data = await resp.json();
+
+                // OSM-Ergebnisse hinten anhängen
+                data.forEach(item => {
+                    const opt = document.createElement("option");
+                    opt.value = item.display_name;
+                    dl.appendChild(opt);
+                });
+
+            } catch (err) {
+                console.warn("Fehler bei Nominatim-Fetch:", err);
+            }
+        }
+
 
     </script>
 </body>
