@@ -1411,8 +1411,8 @@
             fahrten[idx] = {
                 ...f,
                 adresse: neueAdresse,
-                zahlungsart: neueZahlungsart,
-                bargeld: neuerBargeld,
+                zahlungsart = neueZahlungsart,
+                bargeld = neueZahlungsart === "bar" ? neuerBargeldWert : 0,
                 dist: neueDist,
                 extraBonus: neuerExtraBonus,
                 vergütung: neueVerguetung
