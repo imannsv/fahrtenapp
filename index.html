@@ -1918,32 +1918,29 @@
             const dl = document.getElementById("addressSuggestions");
             if (!dl) return;
 
-            // Erst unsere statischen Vorschläge passend zum Filter hinzufügen
+            // zuerst unsere eigenen (KNOWN_ADDRESSES) passend anzeigen
             fillAddressDatalistStatic(query);
 
-            // Wenn Query sehr kurz ist, nur statische anzeigen und fertig
             if (!query || query.trim().length < 3) {
+                // bei kurzen Eingaben nur die statischen Vorschläge
                 return;
             }
 
             const q = query.trim();
 
-            // Nominatim-URL – Fokus auf Hannover (Ahlem/Linden Umgebung)
             const params = new URLSearchParams({
                 q: q + ", Hannover",
                 format: "json",
                 addressdetails: "1",
-                limit: "5",
+                limit: "1",      // ⬅️ nur EIN Ergebnis von Nominatim holen
                 countrycodes: "de"
-                // Man könnte hier auch viewbox/bounded nutzen, aber für dich reicht der Stadtbezug gut aus
             });
 
             try {
-                const resp = await fetch("https://nominatim.openstreetmap.org/search?" + params.toString(), {
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                });
+                const resp = await fetch(
+                    "https://nominatim.openstreetmap.org/search?" + params.toString(),
+                    { headers: { "Accept": "application/json" } }
+                );
 
                 if (!resp.ok) {
                     console.warn("Nominatim-Request fehlgeschlagen", resp.status);
@@ -1951,18 +1948,37 @@
                 }
 
                 const data = await resp.json();
+                if (!Array.isArray(data) || data.length === 0) return;
 
-                // OSM-Ergebnisse hinten anhängen
-                data.forEach(item => {
-                    const opt = document.createElement("option");
-                    opt.value = item.display_name;
-                    dl.appendChild(opt);
-                });
+                const item = data[0];
+
+                // Versuche den Straßennamen aus address.road zu holen
+                const addr = item.address || {};
+                const road =
+                    addr.road ||
+                    addr.pedestrian ||
+                    addr.footway ||
+                    (item.display_name ? item.display_name.split(",")[0] : "");
+
+                // Wenn du NUR die Straße willst:
+                let label = road || "";
+
+                // Falls du Straße + Stadtteil willst, dann stattdessen:
+                // const cityPart = addr.suburb || addr.city_district || addr.city || addr.town || "";
+                // let label = road;
+                // if (cityPart) label += ", " + cityPart;
+
+                if (!label) return;
+
+                const opt = document.createElement("option");
+                opt.value = label;      // ⬅️ nur der kurze Straßen-Text
+                dl.appendChild(opt);
 
             } catch (err) {
                 console.warn("Fehler bei Nominatim-Fetch:", err);
             }
         }
+
 
 
     </script>
