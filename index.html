@@ -767,13 +767,7 @@
         const THEME_KEY = 'fahrtenApp_theme';
         const LANG_KEY = 'fahrtenApp_lang';
         const APP_VERSION = "1.17";
-        // Adressen für Autocomplete – hier kannst du deine Stadtteil-Adressen eintragen
-        const KNOWN_ADDRESSES = [
-            // Beispiel:
-            // "Musterstraße 10, Laatzen",
-            // "Hauptstraße 5, Laatzen",
-            // "Rewe Musterstraße, Laatzen",
-        ];
+        
 
 
 
@@ -1337,24 +1331,6 @@
             berechneZusammenfassung();
             saveState();
         }
-
-        function fillAddressDatalistStatic(filterText = "") {
-            const dl = document.getElementById("addressSuggestions");
-            if (!dl) return;
-
-            dl.innerHTML = "";
-
-            const ft = filterText.toLowerCase();
-
-            KNOWN_ADDRESSES.forEach(addr => {
-                if (!ft || addr.toLowerCase().includes(ft)) {
-                    const opt = document.createElement("option");
-                    opt.value = addr;
-                    dl.appendChild(opt);
-                }
-            });
-        }
-
 
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
