@@ -653,6 +653,18 @@
             letter-spacing: 0.12em;
             text-transform: uppercase;
         }
+
+        /* Timestamp rechts in der Fahrtenliste */
+        .fahrt-time {
+            font-size: 10px;
+            color: #9ca3af;
+            margin-left: 4px;
+        }
+
+        .dark .fahrt-time {
+            color: #e5e7eb;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -754,6 +766,10 @@
                 <div class="summary-row">
                     <div class="summary-label" id="summaryTripsLabelText">Anzahl Fahrten</div>
                     <div class="summary-value" id="anzahlFahrten">0</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label" id="summaryTripsBarLabelText">davon Bar</div>
+                    <div class="summary-value" id="anzahlFahrtenBar">0</div>
                 </div>
                 <div class="summary-row">
                     <div class="summary-label" id="summaryTripsOver5LabelText">Fahrten mit Zuschlag (ab 5 km)</div>
@@ -877,6 +893,7 @@
                 extra8Placeholder: 'nur bei Entfernungen ≥ 8 km',
                 btnAddTrip: 'Fahrt hinzufügen',
                 summaryTrips: 'Anzahl Fahrten',
+                summaryTripsBar: 'davon Bar',
                 summaryTripsOver5: 'Fahrten mit Zuschlag (ab 5 km)',
                 summaryCash: 'Summe Bargeld',
                 summaryTips: 'Summe Trinkgeld (Info)',
@@ -924,6 +941,7 @@
                 extra8Placeholder: 'only for distances ≥ 8 km',
                 btnAddTrip: 'Add ride',
                 summaryTrips: 'Number of rides',
+                summaryTripsBar: 'of which cash',
                 summaryTripsOver5: 'Rides with extra (from 5 km)',
                 summaryCash: 'Total cash',
                 summaryTips: 'Total tips (info)',
@@ -971,6 +989,7 @@
                 extra8Placeholder: 'только для расстояний ≥ 8 км',
                 btnAddTrip: 'Добавить поездку',
                 summaryTrips: 'Количество поездок',
+                summaryTripsBar: 'из них наличными',
                 summaryTripsOver5: 'Поездки с надбавкой (от 5 км)',
                 summaryCash: 'Сумма наличными',
                 summaryTips: 'Сумма чаевых (инфо)',
@@ -1036,6 +1055,7 @@
         const btnExportText = document.getElementById('btnExportText');
 
         const summaryTripsLabelText = document.getElementById('summaryTripsLabelText');
+        const summaryTripsBarLabelText = document.getElementById('summaryTripsBarLabelText');
         const summaryTripsOver5LabelText = document.getElementById('summaryTripsOver5LabelText');
         const summaryCashLabelText = document.getElementById('summaryCashLabelText');
         const summaryTipsLabelText = document.getElementById('summaryTipsLabelText');
@@ -1066,6 +1086,7 @@
         const stundenInput = document.getElementById('stunden');
         const stundenlohnInput = document.getElementById('stundenlohn');
         const anzahlFahrtenSpan = document.getElementById('anzahlFahrten');
+        const anzahlFahrtenBarSpan = document.getElementById('anzahlFahrtenBar');
         const anzahlÜber5Span = document.getElementById('anzahlÜber5');
         const summeBargeldSpan = document.getElementById('summeBargeld');
         const summeTrinkgeldSpan = document.getElementById('summeTrinkgeld');
@@ -1156,6 +1177,7 @@
             btnExportText.textContent = pack.btnExport;
 
             summaryTripsLabelText.textContent = pack.summaryTrips;
+            summaryTripsBarLabelText.textContent = pack.summaryTripsBar;
             summaryTripsOver5LabelText.textContent = pack.summaryTripsOver5;
             summaryCashLabelText.textContent = pack.summaryCash;
             summaryTipsLabelText.textContent = pack.summaryTips;
@@ -1334,7 +1356,8 @@
                 dist,
                 extraBonus,
                 trinkgeld: 0,
-                vergütung
+                vergütung,
+                timestamp: Date.now()
             });
 
             adresseInput.value = '';
@@ -1611,9 +1634,21 @@
                 delBtn.dataset.delIndex = String(index);
                 delBtn.textContent = t('btnDelete');
 
+                const timeSpan = document.createElement('span');
+                timeSpan.className = 'fahrt-time';
+                if (f.timestamp) {
+                    const d = new Date(f.timestamp);
+                    const hh = String(d.getHours()).padStart(2, '0');
+                    const mm = String(d.getMinutes()).padStart(2, '0');
+                    timeSpan.textContent = `${hh}:${mm}`;
+                } else {
+                    timeSpan.textContent = '--:--';
+                }
+
                 right.appendChild(tipBtn);
                 right.appendChild(editBtn);
                 right.appendChild(delBtn);
+                right.appendChild(timeSpan);
 
                 meta.appendChild(left);
                 meta.appendChild(right);
@@ -1626,6 +1661,7 @@
 
         function berechneZusammenfassung() {
             const anzahl = fahrten.length;
+            const anzahlBar = fahrten.filter(f => f.zahlungsart === 'bar').length;
             const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
             const summeTrinkgeld = fahrten.reduce((sum, f) => sum + (f.trinkgeld || 0), 0);
@@ -1640,6 +1676,7 @@
             const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
             anzahlFahrtenSpan.textContent = anzahl;
+            anzahlFahrtenBarSpan.textContent = anzahlBar;
             anzahlÜber5Span.textContent = anzahlZuschlag;
             summeBargeldSpan.textContent = formatEuro(summeBargeld);
             summeTrinkgeldSpan.textContent = formatEuro(summeTrinkgeld);
@@ -1692,6 +1729,7 @@
             let y = 26;
 
             const anzahl = fahrten.length;
+            const anzahlBar = fahrten.filter(f => f.zahlungsart === 'bar').length;
             const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
             const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
@@ -1723,6 +1761,7 @@
 
             const summaryLinesLeft = [
                 `Anzahl Fahrten: ${anzahl}`,
+                `davon Bar: ${anzahlBar}`,
                 `Fahrten mit Zuschlag (ab 5 km): ${anzahlZuschlag}`,
                 `Stunden gearbeitet: ${stunden} h`,
                 `Erfasste Kilometer: ${sumKm.toFixed(1)} km`
