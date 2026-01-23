@@ -1079,20 +1079,29 @@
         }
 
         // Button-Feedback + Toast
+        let addBtnResetTimer = null;
+
         function flashAddSuccess() {
             const btn = document.getElementById('addFahrtBtn');
             const label = document.getElementById('btnAddTripText');
             if (!btn || !label) return;
 
-            const oldText = label.textContent;
-            btn.classList.add('success');
-            label.textContent = t('toastAdded');
+            // Falls noch ein Reset-Timer läuft: abbrechen, damit wir sauber neu starten
+            if (addBtnResetTimer) {
+                clearTimeout(addBtnResetTimer);
+                addBtnResetTimer = null;
+            }
 
-            setTimeout(() => {
+            btn.classList.add('success');
+            label.textContent = t('toastAdded'); // z.B. "✓ Hinzugefügt"
+
+            addBtnResetTimer = setTimeout(() => {
                 btn.classList.remove('success');
-                label.textContent = oldText;
+                label.textContent = t('btnAddTrip'); // IMMER zurück auf "Fahrt hinzufügen" (bzw. Sprache)
+                addBtnResetTimer = null;
             }, 900);
         }
+
 
         function showToast(message) {
             const toast = document.getElementById('toast');
