@@ -124,15 +124,13 @@
             color: #111827;
         }
 
-            input:focus,
-            select:focus {
+            input:focus, select:focus {
                 border-color: #2563eb;
                 box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
                 background: #ffffff;
             }
 
-            input:disabled,
-            select:disabled {
+            input:disabled, select:disabled {
                 background: #e5e7eb;
                 color: #9ca3af;
                 cursor: not-allowed;
@@ -199,6 +197,7 @@
             background: #f9fafb;
             color: #374151;
             cursor: pointer;
+            line-height: 1.4;
         }
 
             .btn-small:hover {
@@ -267,8 +266,17 @@
 
         .fahrt-meta-right {
             display: flex;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .fahrt-time {
+            font-size: 11px;
+            opacity: 0.8;
+            padding-left: 2px;
+            white-space: nowrap;
         }
 
         .pill {
@@ -477,8 +485,7 @@
             box-shadow: 0 10px 24px rgba(0,0,0,0.8);
         }
 
-        .dark input,
-        .dark select {
+        .dark input, .dark select {
             background: #020617;
             border-color: #374151;
             color: #e5e7eb;
@@ -488,8 +495,7 @@
                 color: #6b7280;
             }
 
-            .dark input:disabled,
-            .dark select:disabled {
+            .dark input:disabled, .dark select:disabled {
                 background: #111827;
                 color: #6b7280;
             }
@@ -537,7 +543,7 @@
                 color: #fee2e2;
             }
 
-        /* >>> heller im Darkmode für Adresse & Betrag <<< */
+        /* heller im Darkmode für Adresse & Betrag */
         .dark .fahrt-adresse,
         .dark .fahrt-verg {
             color: #e5e7eb;
@@ -585,87 +591,6 @@
             color: #9ca3af;
         }
 
-        /* Splashscreen */
-        .splash-screen {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at top, #1d4ed8 0, #020617 55%, #020617 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            transition: opacity 0.4s ease;
-        }
-
-            .splash-screen.hidden {
-                opacity: 0;
-                pointer-events: none;
-            }
-
-        .splash-card {
-            background: rgba(15,23,42,0.88);
-            border-radius: 20px;
-            padding: 18px 20px 16px;
-            max-width: 320px;
-            width: 80%;
-            box-shadow: 0 22px 50px rgba(0,0,0,0.65);
-            backdrop-filter: blur(10px);
-            text-align: center;
-        }
-
-        .splash-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #e5e7eb;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .splash-subtitle {
-            margin-top: 4px;
-            font-size: 12px;
-            color: #9ca3af;
-        }
-
-        .splash-progress {
-            margin-top: 14px;
-            width: 100%;
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(15,23,42,0.8);
-            overflow: hidden;
-            box-shadow: inset 0 0 0 1px rgba(148,163,184,0.4);
-        }
-
-        .splash-progress-bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, #22c55e, #a3e635);
-            box-shadow: 0 0 12px rgba(34,197,94,0.7);
-            transition: width 0.35s ease;
-        }
-
-        .splash-progress-text {
-            margin-top: 6px;
-            font-size: 11px;
-            color: #cbd5f5;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        /* Timestamp rechts in der Fahrtenliste */
-        .fahrt-time {
-            font-size: 10px;
-            color: #9ca3af;
-            margin-left: 4px;
-        }
-
-        .dark .fahrt-time {
-            color: #e5e7eb;
-            opacity: 0.7;
-        }
-
         /* Add-Feedback: Button success state */
         .btn-primary.success {
             background: linear-gradient(135deg, #16a34a, #22c55e) !important;
@@ -676,7 +601,7 @@
                 box-shadow: 0 6px 14px rgba(34,197,94,0.4) !important;
             }
 
-        /* Optional: Toast */
+        /* Toast */
         .toast {
             position: fixed;
             left: 50%;
@@ -693,6 +618,11 @@
             transition: opacity 0.18s ease, transform 0.18s ease;
             z-index: 2500;
             backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 92vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
             .toast.show {
@@ -700,22 +630,27 @@
                 transform: translateX(-50%) translateY(0);
             }
 
+        /* Optional: Update notice box (falls showUpdateNotification ausgelöst wird) */
+        .update-notice {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(37,99,235,0.12);
+            border: 1px solid rgba(37,99,235,0.25);
+            color: #111827;
+            font-size: 12px;
+        }
 
+        .dark .update-notice {
+            background: rgba(37,99,235,0.18);
+            border-color: rgba(37,99,235,0.28);
+            color: #e5e7eb;
+        }
     </style>
 </head>
-<body>
-    <!-- Splashscreen -->
-    <div id="splash" class="splash-screen">
-        <div class="splash-card">
-            <div class="splash-title">Fahrten-App</div>
-            <div class="splash-subtitle">Daten werden geladen&nbsp;…</div>
-            <div class="splash-progress">
-                <div class="splash-progress-bar" id="splashProgressBar"></div>
-            </div>
-            <div class="splash-progress-text" id="splashProgressText">0%</div>
-        </div>
-    </div>
 
+<body>
     <div class="app">
         <div class="header">
             <div class="header-top">
@@ -730,6 +665,8 @@
             <div class="subtitle" id="subtitleText">
                 Erfasse deine Fahrten und berechne, was dir noch ausgezahlt werden muss.
             </div>
+
+            <div id="updateNotice" class="update-notice"></div>
         </div>
 
         <!-- Neue Fahrt -->
@@ -745,32 +682,27 @@
 
             <label>
                 <span id="labelAddressText">Adresse</span>
-                <input type="text" id="adresse"
-                       placeholder="bei Online nicht nötig">
+                <input type="text" id="adresse" placeholder="bei Online nicht nötig">
             </label>
 
             <label>
                 <span id="labelCashText">Bargeldbetrag (€)</span>
-                <input type="number" id="bargeld" step="0.01" min="0"
-                       inputmode="decimal"
-                       placeholder="nur bei Barzahlung" disabled>
+                <input type="number" id="bargeld" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Barzahlung" disabled>
             </label>
 
             <label>
                 <span id="labelDistanceText">Entfernung (km)</span>
-                <input type="number" id="entfernung" step="0.1" min="0"
-                       inputmode="decimal"
-                       placeholder="leer = unter 5 km">
+                <input type="number" id="entfernung" step="0.1" min="0" inputmode="decimal" placeholder="leer = unter 5 km">
             </label>
 
             <label>
                 <span id="labelExtra8Text">Zuschlag ab 8 km (€)</span>
-                <input type="number" id="extra8km" step="0.01" min="0"
-                       inputmode="decimal"
-                       placeholder="nur bei Entfernungen ≥ 8 km" disabled>
+                <input type="number" id="extra8km" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Entfernungen ≥ 8 km" disabled>
             </label>
 
-            <button class="btn btn-primary" id="addFahrtBtn"><span id="btnAddTripText">Fahrt hinzufügen</span></button>
+            <button class="btn btn-primary" id="addFahrtBtn">
+                <span id="btnAddTripText">Fahrt hinzufügen</span>
+            </button>
         </div>
 
         <!-- Erfasste Fahrten -->
@@ -786,16 +718,12 @@
         <div class="card">
             <label>
                 <span id="labelHoursText">Stunden gearbeitet</span>
-                <input type="number" id="stunden" step="0.25" min="0"
-                       inputmode="decimal"
-                       value="0">
+                <input type="number" id="stunden" step="0.25" min="0" inputmode="decimal" value="0">
             </label>
 
             <label>
                 <span id="labelHourlyWageText">Stundenlohn (€)</span>
-                <input type="number" id="stundenlohn" step="0.01" min="0"
-                       inputmode="decimal"
-                       value="7.5">
+                <input type="number" id="stundenlohn" step="0.01" min="0" inputmode="decimal" value="7.5">
             </label>
 
             <div style="margin-top:8px;">
@@ -803,10 +731,13 @@
                     <div class="summary-label" id="summaryTripsLabelText">Anzahl Fahrten</div>
                     <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
+
+                <!-- NEU: davon Bar -->
                 <div class="summary-row">
-                    <div class="summary-label" id="summaryTripsBarLabelText">davon Bar</div>
-                    <div class="summary-value" id="anzahlFahrtenBar">0</div>
+                    <div class="summary-label" id="summaryTripsCashLabelText">davon Bar</div>
+                    <div class="summary-value" id="anzahlBar">0</div>
                 </div>
+
                 <div class="summary-row">
                     <div class="summary-label" id="summaryTripsOver5LabelText">Fahrten mit Zuschlag (ab 5 km)</div>
                     <div class="summary-value" id="anzahlÜber5">0</div>
@@ -881,16 +812,7 @@
                 <span id="appUpdateText">App Update</span>
             </button>
 
-            <!-- Update-Hinweis-Box -->
-            <div id="updateNotice"
-                 style="display:none; margin-top:8px; font-size:12px;
-                        padding:8px; border-radius:8px;
-                        background:#fef3c7; color:#92400e; text-align:center;">
-            </div>
-
-            <div id="versionLabel" class="version-label">
-                Version 1.17
-            </div>
+            <div id="versionLabel" class="version-label">Version 1.17</div>
 
             <button id="closeSettings" class="close-settings" type="button">
                 <span id="closeSettingsText">Fertig</span>
@@ -898,7 +820,10 @@
         </div>
     </div>
 
-    <!-- jsPDF (nur für PDF) -->
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
     <script>
@@ -906,7 +831,6 @@
         const STORAGE_KEY = 'fahrtenApp_v4';
         const THEME_KEY = 'fahrtenApp_theme';
         const LANG_KEY = 'fahrtenApp_lang';
-        const APP_VERSION = "1.17";
 
         const translations = {
             de: {
@@ -929,7 +853,7 @@
                 extra8Placeholder: 'nur bei Entfernungen ≥ 8 km',
                 btnAddTrip: 'Fahrt hinzufügen',
                 summaryTrips: 'Anzahl Fahrten',
-                summaryTripsBar: 'davon Bar',
+                summaryTripsCash: 'davon Bar',
                 summaryTripsOver5: 'Fahrten mit Zuschlag (ab 5 km)',
                 summaryCash: 'Summe Bargeld',
                 summaryTips: 'Summe Trinkgeld (Info)',
@@ -955,7 +879,8 @@
                 fareLabel: 'Fahrt',
                 btnTip: 'Trinkgeld',
                 btnEdit: 'Bearbeiten',
-                btnDelete: 'Löschen'
+                btnDelete: 'Löschen',
+                toastAdded: '✓ Hinzugefügt'
             },
             en: {
                 title: 'Rides & Hours',
@@ -977,7 +902,7 @@
                 extra8Placeholder: 'only for distances ≥ 8 km',
                 btnAddTrip: 'Add ride',
                 summaryTrips: 'Number of rides',
-                summaryTripsBar: 'of which cash',
+                summaryTripsCash: 'of which cash',
                 summaryTripsOver5: 'Rides with extra (from 5 km)',
                 summaryCash: 'Total cash',
                 summaryTips: 'Total tips (info)',
@@ -1003,7 +928,8 @@
                 fareLabel: 'Ride',
                 btnTip: 'Tip',
                 btnEdit: 'Edit',
-                btnDelete: 'Delete'
+                btnDelete: 'Delete',
+                toastAdded: '✓ Added'
             },
             ru: {
                 title: 'Поездки и часы',
@@ -1025,7 +951,7 @@
                 extra8Placeholder: 'только для расстояний ≥ 8 км',
                 btnAddTrip: 'Добавить поездку',
                 summaryTrips: 'Количество поездок',
-                summaryTripsBar: 'из них наличными',
+                summaryTripsCash: 'из них наличные',
                 summaryTripsOver5: 'Поездки с надбавкой (от 5 км)',
                 summaryCash: 'Сумма наличными',
                 summaryTips: 'Сумма чаевых (инфо)',
@@ -1051,7 +977,8 @@
                 fareLabel: 'Поездка',
                 btnTip: 'Чаевые',
                 btnEdit: 'Изменить',
-                btnDelete: 'Удалить'
+                btnDelete: 'Удалить',
+                toastAdded: '✓ Добавлено'
             }
         };
 
@@ -1091,7 +1018,7 @@
         const btnExportText = document.getElementById('btnExportText');
 
         const summaryTripsLabelText = document.getElementById('summaryTripsLabelText');
-        const summaryTripsBarLabelText = document.getElementById('summaryTripsBarLabelText');
+        const summaryTripsCashLabelText = document.getElementById('summaryTripsCashLabelText');
         const summaryTripsOver5LabelText = document.getElementById('summaryTripsOver5LabelText');
         const summaryCashLabelText = document.getElementById('summaryCashLabelText');
         const summaryTipsLabelText = document.getElementById('summaryTipsLabelText');
@@ -1122,7 +1049,7 @@
         const stundenInput = document.getElementById('stunden');
         const stundenlohnInput = document.getElementById('stundenlohn');
         const anzahlFahrtenSpan = document.getElementById('anzahlFahrten');
-        const anzahlFahrtenBarSpan = document.getElementById('anzahlFahrtenBar');
+        const anzahlBarSpan = document.getElementById('anzahlBar');
         const anzahlÜber5Span = document.getElementById('anzahlÜber5');
         const summeBargeldSpan = document.getElementById('summeBargeld');
         const summeTrinkgeldSpan = document.getElementById('summeTrinkgeld');
@@ -1134,10 +1061,6 @@
         const resetBtn = document.getElementById('resetBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
 
-        const splash = document.getElementById('splash');
-        const splashProgressText = document.getElementById('splashProgressText');
-        const splashProgressBar = document.getElementById('splashProgressBar');
-
         function parseEuro(value) {
             if (value === null || value === undefined || value === '') return 0;
             return parseFloat(String(value).replace(',', '.')) || 0;
@@ -1147,6 +1070,15 @@
             return num.toFixed(2).replace('.', ',') + ' €';
         }
 
+        function formatTimeHHMM(dateOrIso) {
+            const d = (dateOrIso instanceof Date) ? dateOrIso : new Date(dateOrIso);
+            if (Number.isNaN(d.getTime())) return '';
+            const hh = String(d.getHours()).padStart(2, '0');
+            const mm = String(d.getMinutes()).padStart(2, '0');
+            return `${hh}:${mm}`;
+        }
+
+        // Button-Feedback + Toast
         function flashAddSuccess() {
             const btn = document.getElementById('addFahrtBtn');
             const label = document.getElementById('btnAddTripText');
@@ -1154,7 +1086,7 @@
 
             const oldText = label.textContent;
             btn.classList.add('success');
-            label.textContent = '✓ Hinzugefügt';
+            label.textContent = t('toastAdded');
 
             setTimeout(() => {
                 btn.classList.remove('success');
@@ -1165,43 +1097,33 @@
         function showToast(message) {
             const toast = document.getElementById('toast');
             if (!toast) return;
-
             toast.textContent = message;
             toast.classList.add('show');
-
             setTimeout(() => toast.classList.remove('show'), 1200);
         }
-
 
         // Theme handling
         function applyTheme(theme) {
             const isDark = theme === 'dark';
             document.documentElement.classList.toggle('dark', isDark);
-            if (themeToggleBtn) {
-                themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
-            }
-            try {
-                localStorage.setItem(THEME_KEY, theme);
-            } catch (e) { /* ignore */ }
+            if (themeToggleBtn) themeToggleBtn.textContent = isDark ? '☀️' : '🌙';
+            try { localStorage.setItem(THEME_KEY, theme); } catch (e) { }
         }
 
         function initTheme() {
             let theme = 'light';
             try {
                 const stored = localStorage.getItem(THEME_KEY);
-                if (stored === 'dark' || stored === 'light') {
-                    theme = stored;
-                }
-            } catch (e) { /* ignore */ }
+                if (stored === 'dark' || stored === 'light') theme = stored;
+            } catch (e) { }
             applyTheme(theme);
         }
 
-        // Dark-Mode per Button umschalten
+        // Theme toggle click (FIX)
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 const isDark = document.documentElement.classList.contains('dark');
-                const newTheme = isDark ? 'light' : 'dark';
-                applyTheme(newTheme);
+                applyTheme(isDark ? 'light' : 'dark');
             });
         }
 
@@ -1239,7 +1161,7 @@
             btnExportText.textContent = pack.btnExport;
 
             summaryTripsLabelText.textContent = pack.summaryTrips;
-            summaryTripsBarLabelText.textContent = pack.summaryTripsBar;
+            summaryTripsCashLabelText.textContent = pack.summaryTripsCash;
             summaryTripsOver5LabelText.textContent = pack.summaryTripsOver5;
             summaryCashLabelText.textContent = pack.summaryCash;
             summaryTipsLabelText.textContent = pack.summaryTips;
@@ -1267,10 +1189,8 @@
             let lang = 'de';
             try {
                 const stored = localStorage.getItem(LANG_KEY);
-                if (stored && translations[stored]) {
-                    lang = stored;
-                }
-            } catch (e) { /* ignore */ }
+                if (stored && translations[stored]) lang = stored;
+            } catch (e) { }
             currentLang = lang;
             if (languageSelect) languageSelect.value = lang;
             applyLanguage();
@@ -1281,9 +1201,7 @@
                 const lang = e.target.value;
                 if (!translations[lang]) return;
                 currentLang = lang;
-                try {
-                    localStorage.setItem(LANG_KEY, lang);
-                } catch (e2) { /* ignore */ }
+                try { localStorage.setItem(LANG_KEY, lang); } catch (e2) { }
                 applyLanguage();
                 renderFahrten();
                 berechneZusammenfassung();
@@ -1291,13 +1209,9 @@
         }
 
         // Settings-Modal öffnen/schließen
-        openSettings.addEventListener('click', () => {
-            settingsModal.style.display = 'flex';
-        });
+        openSettings.addEventListener('click', () => { settingsModal.style.display = 'flex'; });
 
-        function closeSettingsModal() {
-            settingsModal.style.display = 'none';
-        }
+        function closeSettingsModal() { settingsModal.style.display = 'none'; }
 
         closeSettingsBtn.addEventListener('click', closeSettingsModal);
         closeSettingsX.addEventListener('click', closeSettingsModal);
@@ -1307,9 +1221,7 @@
         });
 
         // App Update Button
-        appUpdateBtn.addEventListener('click', () => {
-            location.reload();
-        });
+        appUpdateBtn.addEventListener('click', () => { location.reload(); });
 
         function loadState() {
             try {
@@ -1320,6 +1232,7 @@
                 if (typeof data.stunden === 'number') stundenInput.value = data.stunden;
                 if (typeof data.stundenlohn === 'number') stundenlohnInput.value = data.stundenlohn;
             } catch (e) {
+                console.error('Fehler beim Laden aus LocalStorage', e);
             }
         }
 
@@ -1332,6 +1245,7 @@
             try {
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             } catch (e) {
+                console.error('Fehler beim Speichern in LocalStorage', e);
             }
         }
 
@@ -1369,11 +1283,10 @@
                     return;
                 }
             } else {
-                if (!adresse) {
-                    adresse = 'Online-Bestellung';
-                }
+                adresse = 'Online-Bestellung';
             }
 
+            // Entfernung: leer = unter 5 km
             let dist = 0;
             const distRaw = entfernungInput.value;
             if (distRaw && distRaw.trim() !== '') {
@@ -1394,7 +1307,6 @@
             }
 
             let extraBonus = 0;
-
             if (dist >= 8) {
                 extraBonus = parseEuro(extra8kmInput.value);
                 if (extraBonus <= 0) {
@@ -1409,7 +1321,7 @@
                 extraBonus = 0.5;
             }
 
-            const vergütung = BASIS_PRO_FAhrt + extraBonus;
+            const verguetung = BASIS_PRO_FAhrt + extraBonus;
 
             fahrten.push({
                 adresse,
@@ -1418,12 +1330,9 @@
                 dist,
                 extraBonus,
                 trinkgeld: 0,
-                vergütung,
-                timestamp: Date.now()
+                verguetung,
+                createdAt: new Date().toISOString()
             });
-            flashAddSuccess();
-            showToast(`${t('btnAddTrip')} ✓ (${fahrten.length})`);
-
 
             adresseInput.value = '';
             entfernungInput.value = '';
@@ -1434,6 +1343,10 @@
             renderFahrten();
             berechneZusammenfassung();
             saveState();
+
+            // Feedback
+            flashAddSuccess();
+            showToast(`✓ #${fahrten.length} ${t('toastAdded')}`);
         });
 
         resetBtn.addEventListener('click', () => {
@@ -1514,12 +1427,13 @@
             saveState();
         }
 
+        // FIX: Edit sauber + Bar->Online setzt Bargeld = 0
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
 
             const adr = prompt('Adresse bearbeiten:', f.adresse || '');
             if (adr === null) return;
-            const neueAdresse = adr.trim();
+            let neueAdresse = adr.trim();
             if (!neueAdresse) {
                 alert('Adresse darf nicht leer sein.');
                 return;
@@ -1539,15 +1453,27 @@
                 }
             }
 
-            const bargPrompt = prompt(
-                'Bargeldbetrag in € (leer = 0):',
-                f.bargeld ? f.bargeld.toFixed(2).replace('.', ',') : ''
-            );
-            if (bargPrompt === null) return;
-            let neuerBargeld = parseEuro(bargPrompt);
-            if (neuerBargeld < 0) {
-                alert('Bargeldbetrag darf nicht negativ sein.');
-                return;
+            // Bei Online: Adresse intern auf Online-Bestellung (wie beim Add)
+            if (neueZahlungsart === 'online') {
+                neueAdresse = 'Online-Bestellung';
+            }
+
+            // Bargeld nur relevant, wenn bar — sonst immer 0 (Bugfix)
+            let neuerBargeld = 0;
+            if (neueZahlungsart === 'bar') {
+                const bargPrompt = prompt(
+                    'Bargeldbetrag in € (leer = 0):',
+                    f.bargeld ? f.bargeld.toFixed(2).replace('.', ',') : ''
+                );
+                if (bargPrompt === null) return;
+                neuerBargeld = parseEuro(bargPrompt);
+                if (neuerBargeld < 0) {
+                    alert('Bargeldbetrag darf nicht negativ sein.');
+                    return;
+                }
+            } else {
+                // wenn online: automatisch 0 — kein Prompt nötig
+                neuerBargeld = 0;
             }
 
             const distPrompt = prompt(
@@ -1568,9 +1494,7 @@
             if (neueDist >= 8) {
                 const extraPrompt = prompt(
                     'Zuschlag ab 8 km in €:',
-                    f.extraBonus > 0 && f.dist >= 8
-                        ? f.extraBonus.toFixed(2).replace('.', ',')
-                        : ''
+                    (f.extraBonus > 0 && f.dist >= 8) ? f.extraBonus.toFixed(2).replace('.', ',') : ''
                 );
                 if (extraPrompt === null) return;
                 neuerExtraBonus = parseEuro(extraPrompt);
@@ -1590,19 +1514,15 @@
 
             const neueVerguetung = BASIS_PRO_FAhrt + neuerExtraBonus;
 
-            // Wenn Zahlungsart nicht bar, Bargeld immer auf 0 setzen
-            if (neueZahlungsart !== 'bar') {
-                neuerBargeld = 0;
-            }
-
             fahrten[idx] = {
                 ...f,
                 adresse: neueAdresse,
                 zahlungsart: neueZahlungsart,
-                bargeld: neuerBargeld,
+                bargeld: (neueZahlungsart === 'bar') ? neuerBargeld : 0,
                 dist: neueDist,
                 extraBonus: neuerExtraBonus,
-                vergütung: neueVerguetung
+                verguetung: neueVerguetung
+                // createdAt bleibt erhalten
             };
 
             renderFahrten();
@@ -1612,8 +1532,7 @@
 
         function renderFahrten() {
             if (fahrten.length === 0) {
-                fahrtenListe.innerHTML =
-                    '<li class="placeholder">' + t('placeholderNoTrips') + '</li>';
+                fahrtenListe.innerHTML = '<li class="placeholder">' + t('placeholderNoTrips') + '</li>';
                 return;
             }
 
@@ -1627,14 +1546,13 @@
 
                 const addr = document.createElement('div');
                 addr.className = 'fahrt-adresse';
-                addr.textContent = (index + 1) + '. ' + f.adresse;
+                addr.textContent = (index + 1) + '. ' + (f.adresse || '');
 
                 const rightMain = document.createElement('div');
                 rightMain.className = 'fahrt-verg money';
 
                 if (f.zahlungsart === 'bar') {
-                    rightMain.textContent =
-                        (f.bargeld || 0).toFixed(2).replace('.', ',') + ' €';
+                    rightMain.textContent = (f.bargeld || 0).toFixed(2).replace('.', ',') + ' €';
                 } else {
                     rightMain.textContent = t('pillOnline');
                 }
@@ -1675,7 +1593,7 @@
                 }
 
                 const fahrtSpan = document.createElement('span');
-                fahrtSpan.textContent = '· ' + t('fareLabel') + ': ' + f.vergütung.toFixed(2) + ' €';
+                fahrtSpan.textContent = '· ' + t('fareLabel') + ': ' + (f.verguetung || 0).toFixed(2) + ' €';
                 left.appendChild(fahrtSpan);
 
                 const right = document.createElement('div');
@@ -1699,21 +1617,15 @@
                 delBtn.dataset.delIndex = String(index);
                 delBtn.textContent = t('btnDelete');
 
-                const timeSpan = document.createElement('span');
-                timeSpan.className = 'fahrt-time';
-                if (f.timestamp) {
-                    const d = new Date(f.timestamp);
-                    const hh = String(d.getHours()).padStart(2, '0');
-                    const mm = String(d.getMinutes()).padStart(2, '0');
-                    timeSpan.textContent = `${hh}:${mm}`;
-                } else {
-                    timeSpan.textContent = '--:--';
-                }
+                // Timestamp (HH:mm) rechts neben Löschen
+                const time = document.createElement('span');
+                time.className = 'fahrt-time';
+                time.textContent = formatTimeHHMM(f.createdAt || new Date());
 
                 right.appendChild(tipBtn);
                 right.appendChild(editBtn);
                 right.appendChild(delBtn);
-                right.appendChild(timeSpan);
+                right.appendChild(time);
 
                 meta.appendChild(left);
                 meta.appendChild(right);
@@ -1727,36 +1639,35 @@
         function berechneZusammenfassung() {
             const anzahl = fahrten.length;
             const anzahlBar = fahrten.filter(f => f.zahlungsart === 'bar').length;
-            const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
+            const anzahlZuschlag = fahrten.filter(f => (f.extraBonus || 0) > 0).length;
+
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
             const summeTrinkgeld = fahrten.reduce((sum, f) => sum + (f.trinkgeld || 0), 0);
-            const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+            const summeFahrtenVerguetung = fahrten.reduce((sum, f) => sum + (f.verguetung || 0), 0);
             const sumKm = fahrten.reduce((sum, f) => sum + (f.dist || 0), 0);
 
             const stunden = parseEuro(stundenInput.value);
             const stundenlohn = parseEuro(stundenlohnInput.value);
 
             const lohnStunden = stunden * stundenlohn;
-            const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
+            const gesamtBrutto = lohnStunden + summeFahrtenVerguetung;
             const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
             anzahlFahrtenSpan.textContent = anzahl;
-            anzahlFahrtenBarSpan.textContent = anzahlBar;
+            anzahlBarSpan.textContent = anzahlBar;
             anzahlÜber5Span.textContent = anzahlZuschlag;
+
             summeBargeldSpan.textContent = formatEuro(summeBargeld);
             summeTrinkgeldSpan.textContent = formatEuro(summeTrinkgeld);
             summeKmSpan.textContent = sumKm.toFixed(1).replace('.', ',') + ' km';
             lohnStundenSpan.textContent = formatEuro(lohnStunden);
-            lohnFahrtenSpan.textContent = formatEuro(summeFahrtenVergütung);
+            lohnFahrtenSpan.textContent = formatEuro(summeFahrtenVerguetung);
             gesamtBruttoSpan.textContent = formatEuro(gesamtBrutto);
             nettoAuszahlungSpan.textContent = formatEuro(nettoAuszahlung);
 
             nettoAuszahlungSpan.classList.remove('summary-green', 'summary-red');
-            if (nettoAuszahlung >= 0) {
-                nettoAuszahlungSpan.classList.add('summary-green');
-            } else {
-                nettoAuszahlungSpan.classList.add('summary-red');
-            }
+            if (nettoAuszahlung >= 0) nettoAuszahlungSpan.classList.add('summary-green');
+            else nettoAuszahlungSpan.classList.add('summary-red');
         }
 
         function exportToPdf() {
@@ -1764,6 +1675,7 @@
                 alert('PDF-Export ist aktuell nicht verfügbar (jsPDF nicht geladen).');
                 return;
             }
+
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
@@ -1795,18 +1707,19 @@
 
             const anzahl = fahrten.length;
             const anzahlBar = fahrten.filter(f => f.zahlungsart === 'bar').length;
-            const anzahlZuschlag = fahrten.filter(f => f.extraBonus > 0).length;
+            const anzahlZuschlag = fahrten.filter(f => (f.extraBonus || 0) > 0).length;
             const summeBargeld = fahrten.reduce((sum, f) => sum + (f.bargeld || 0), 0);
-            const summeFahrtenVergütung = fahrten.reduce((sum, f) => sum + f.vergütung, 0);
+            const summeFahrtenVerguetung = fahrten.reduce((sum, f) => sum + (f.verguetung || 0), 0);
             const sumKm = fahrten.reduce((sum, f) => sum + (f.dist || 0), 0);
+
             const stunden = parseEuro(stundenInput.value);
             const stundenlohn = parseEuro(stundenlohnInput.value);
             const lohnStunden = stunden * stundenlohn;
-            const gesamtBrutto = lohnStunden + summeFahrtenVergütung;
+            const gesamtBrutto = lohnStunden + summeFahrtenVerguetung;
             const nettoAuszahlung = gesamtBrutto - summeBargeld;
 
             const summaryBoxWidth = pageWidth - marginX * 2;
-            const summaryBoxHeight = 40;
+            const summaryBoxHeight = 44;
 
             doc.setDrawColor(209, 213, 219);
             doc.setFillColor(colorLightGrayBg.r, colorLightGrayBg.g, colorLightGrayBg.b);
@@ -1835,21 +1748,15 @@
             const summaryLinesRight = [
                 `Stundenlohn: ${stundenlohn.toFixed(2)} €`,
                 `Lohn Stunden: ${lohnStunden.toFixed(2)} €`,
-                `Vergütung Fahrten: ${summeFahrtenVergütung.toFixed(2)} €`,
+                `Vergütung Fahrten: ${summeFahrtenVerguetung.toFixed(2)} €`,
                 `Summe Bargeld: ${summeBargeld.toFixed(2)} €`
             ];
 
             doc.setTextColor(colorGray.r, colorGray.g, colorGray.b);
-            summaryLinesLeft.forEach(line => {
-                doc.text(line, sx1, sy);
-                sy += 5;
-            });
+            summaryLinesLeft.forEach(line => { doc.text(line, sx1, sy); sy += 5; });
 
             sy = y + 12;
-            summaryLinesRight.forEach(line => {
-                doc.text(line, sx2, sy);
-                sy += 5;
-            });
+            summaryLinesRight.forEach(line => { doc.text(line, sx2, sy); sy += 5; });
 
             y += summaryBoxHeight + 10;
 
@@ -1884,7 +1791,6 @@
             doc.text('Vergütung', colVerg, y);
 
             y += rowHeight;
-
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
 
@@ -1916,17 +1822,14 @@
 
                 const nr = String(index + 1);
                 let adrText = f.adresse || '';
-                if (f.zahlungsart === 'online') {
-                    adrText = 'Online';
-                } else if (adrText.length > 40) {
-                    adrText = adrText.slice(0, 37) + '...';
-                }
+                if (f.zahlungsart === 'online') adrText = 'Online';
+                else if (adrText.length > 40) adrText = adrText.slice(0, 37) + '...';
 
                 const zahlung = f.zahlungsart === 'bar' ? 'Bar' : 'Online';
-                const bargeld = f.bargeld > 0 ? f.bargeld.toFixed(2) + ' €' : '-';
+                const bargeld = (f.zahlungsart === 'bar' && (f.bargeld || 0) > 0) ? (f.bargeld || 0).toFixed(2) + ' €' : '-';
                 const distStr = (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1) + ' km' : '< 5 km';
-                const extraStr = f.extraBonus > 0 ? '+' + f.extraBonus.toFixed(2) + ' €' : '-';
-                const verg = f.vergütung.toFixed(2) + ' €';
+                const extraStr = (f.extraBonus || 0) > 0 ? '+' + (f.extraBonus || 0).toFixed(2) + ' €' : '-';
+                const verg = (f.verguetung || 0).toFixed(2) + ' €';
 
                 doc.text(nr, colNr, y);
                 doc.text(adrText, colAdr, y);
@@ -1947,11 +1850,7 @@
 
             doc.setFontSize(9);
             doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
-            doc.text(
-                `Noch auszuzahlen (abzüglich Bargeld): ${nettoAuszahlung.toFixed(2)} €`,
-                marginX,
-                y
-            );
+            doc.text(`Noch auszuzahlen (abzüglich Bargeld): ${nettoAuszahlung.toFixed(2)} €`, marginX, y);
 
             const footerY = 290;
             doc.setFontSize(8);
@@ -1966,29 +1865,27 @@
             doc.save(fileName);
         }
 
-        // Update-Hinweis + Badge
+        // -----------------------------------------------
+        // Update-Hinweis anzeigen + Badge setzen
+        // -----------------------------------------------
         function showUpdateNotification(newVersion) {
             const box = document.getElementById('updateNotice');
-            if (box) {
-                box.innerHTML = `
-Neue Version verfügbar: ${newVersion}<br>
-<button id="updateNowBtn"
-                style="margin-top:6px; padding:4px 10px; border-radius:8px;
-                       border:none; background:#2563eb; color:white; cursor:pointer;">
-          Jetzt aktualisieren
-</button>
-`;
-                box.style.display = 'block';
+            if (!box) return;
 
-                document.getElementById('updateNowBtn').onclick = () => {
-                    location.reload(true);
-                };
-            }
+            box.innerHTML = `
+            <strong>Neue Version verfügbar:</strong> ${newVersion}<br>
+            <button id="updateNowBtn"
+              style="margin-top:6px; padding:6px 12px; border-radius:999px;
+                     border:none; background:#2563eb; color:white; cursor:pointer; font-weight:600;">
+              Jetzt aktualisieren
+            </button>
+          `;
+            box.style.display = 'block';
 
             const badge = document.getElementById('updateBadge');
-            if (badge) {
-                badge.style.display = 'inline-flex';
-            }
+            if (badge) badge.style.display = 'inline-flex';
+
+            document.getElementById('updateNowBtn').onclick = () => { location.reload(true); };
         }
 
         async function checkForUpdate() {
@@ -2003,61 +1900,29 @@ Neue Version verfügbar: ${newVersion}<br>
 
                 if (linkHeader) {
                     const match = linkHeader.match(/&page=(\d+)>; rel="last"/);
-                    if (match) {
-                        commitCount = parseInt(match[1], 10);
-                    }
+                    if (match) commitCount = parseInt(match[1], 10);
                 } else {
                     const commits = await response.json();
                     commitCount = commits.length;
                 }
 
                 const versionLabel = document.getElementById("versionLabel");
-                if (versionLabel) {
-                    versionLabel.textContent = `Version 1.${commitCount}`;
-                }
+                if (versionLabel) versionLabel.textContent = `Version 1.${commitCount}`;
 
                 const LAST_KEY = "fahrtenappCommitVersion";
                 const lastSeen = parseInt(localStorage.getItem(LAST_KEY) || "0", 10);
 
                 if (lastSeen && commitCount > lastSeen) {
-                    showUpdateNotification(`Version 1.${commitCount}`);
+                    showUpdateNotification(`1.${commitCount}`);
                 }
 
                 localStorage.setItem(LAST_KEY, String(commitCount));
-
             } catch (err) {
                 console.warn("Update-Check (Commits) fehlgeschlagen:", err);
             }
         }
 
-        // Fake-Ladescreen
-        function startSplash() {
-            if (!splash || !splashProgressText || !splashProgressBar) return;
-
-            let steps = [12, 36, 68, 100];
-            let i = 0;
-
-            splashProgressBar.style.width = '0%';
-            splashProgressText.textContent = '0%';
-
-            const interval = setInterval(() => {
-                const val = steps[i++];
-                splashProgressBar.style.width = val + '%';
-                splashProgressText.textContent = val + '%';
-
-                if (val >= 100 || i >= steps.length) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        splash.classList.add('hidden');
-                        setTimeout(() => {
-                            splash.style.display = 'none';
-                        }, 400);
-                    }, 250);
-                }
-            }, 220);
-        }
-
-        // Init
+        // init
         initTheme();
         initLanguage();
         loadState();
@@ -2065,9 +1930,6 @@ Neue Version verfügbar: ${newVersion}<br>
         berechneZusammenfassung();
         zahlungsartSelect.dispatchEvent(new Event('change'));
         checkForUpdate();
-        startSplash();
     </script>
-    <div id="toast" class="toast"></div>
-
 </body>
 </html>
