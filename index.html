@@ -665,6 +665,42 @@
             color: #e5e7eb;
             opacity: 0.7;
         }
+
+        /* Add-Feedback: Button success state */
+        .btn-primary.success {
+            background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+            box-shadow: 0 10px 20px rgba(34,197,94,0.35) !important;
+        }
+
+            .btn-primary.success:active {
+                box-shadow: 0 6px 14px rgba(34,197,94,0.4) !important;
+            }
+
+        /* Optional: Toast */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%) translateY(8px);
+            background: rgba(15,23,42,0.92);
+            color: #e5e7eb;
+            padding: 10px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 2500;
+            backdrop-filter: blur(10px);
+        }
+
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+
     </style>
 </head>
 <body>
@@ -1111,6 +1147,32 @@
             return num.toFixed(2).replace('.', ',') + ' €';
         }
 
+        function flashAddSuccess() {
+            const btn = document.getElementById('addFahrtBtn');
+            const label = document.getElementById('btnAddTripText');
+            if (!btn || !label) return;
+
+            const oldText = label.textContent;
+            btn.classList.add('success');
+            label.textContent = '✓ Hinzugefügt';
+
+            setTimeout(() => {
+                btn.classList.remove('success');
+                label.textContent = oldText;
+            }, 900);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+
+            toast.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => toast.classList.remove('show'), 1200);
+        }
+
+
         // Theme handling
         function applyTheme(theme) {
             const isDark = theme === 'dark';
@@ -1359,6 +1421,9 @@
                 vergütung,
                 timestamp: Date.now()
             });
+            flashAddSuccess();
+            showToast(`${t('btnAddTrip')} ✓ (${fahrten.length})`);
+
 
             adresseInput.value = '';
             entfernungInput.value = '';
@@ -1908,9 +1973,9 @@
                 box.innerHTML = `
 Neue Version verfügbar: ${newVersion}<br>
 <button id="updateNowBtn"
-            style="margin-top:6px; padding:4px 10px; border-radius:8px;
-                   border:none; background:#2563eb; color:white; cursor:pointer;">
-      Jetzt aktualisieren
+                style="margin-top:6px; padding:4px 10px; border-radius:8px;
+                       border:none; background:#2563eb; color:white; cursor:pointer;">
+          Jetzt aktualisieren
 </button>
 `;
                 box.style.display = 'block';
@@ -2002,5 +2067,7 @@ Neue Version verfügbar: ${newVersion}<br>
         checkForUpdate();
         startSplash();
     </script>
+    <div id="toast" class="toast"></div>
+
 </body>
 </html>
