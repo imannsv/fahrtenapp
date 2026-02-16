@@ -56,7 +56,6 @@
             margin-top: 2px;
         }
 
-        /* Zahnrad */
         .settings-btn {
             border: none;
             background: rgba(15,23,42,0.05);
@@ -543,13 +542,11 @@
                 color: #fee2e2;
             }
 
-        /* heller im Darkmode für Adresse & Betrag */
         .dark .fahrt-adresse,
         .dark .fahrt-verg {
             color: #e5e7eb;
         }
 
-        /* Dynamische Farben für Netto-Auszahlung im Darkmode korrekt anzeigen */
         .dark .summary-green {
             color: #10b981 !important;
         }
@@ -591,7 +588,7 @@
             color: #9ca3af;
         }
 
-        /* Add-Feedback: Button success state */
+        /* Button success state */
         .btn-primary.success {
             background: linear-gradient(135deg, #16a34a, #22c55e) !important;
             box-shadow: 0 10px 20px rgba(34,197,94,0.35) !important;
@@ -630,7 +627,7 @@
                 transform: translateX(-50%) translateY(0);
             }
 
-        /* Optional: Update notice box (falls showUpdateNotification ausgelöst wird) */
+        /* Update notice box */
         .update-notice {
             display: none;
             margin-top: 10px;
@@ -732,7 +729,6 @@
                     <div class="summary-value" id="anzahlFahrten">0</div>
                 </div>
 
-                <!-- NEU: davon Bar -->
                 <div class="summary-row">
                     <div class="summary-label" id="summaryTripsCashLabelText">davon Bar</div>
                     <div class="summary-value" id="anzahlBar">0</div>
@@ -990,7 +986,6 @@
             return pack[key] || translations.de[key] || key;
         }
 
-        // DOM-Elemente
         const openSettings = document.getElementById('openSettings');
         const settingsModal = document.getElementById('settingsModal');
         const closeSettingsBtn = document.getElementById('closeSettings');
@@ -1078,7 +1073,7 @@
             return `${hh}:${mm}`;
         }
 
-        // Button-Feedback + Toast
+        // Button-Feedback + Toast (FIX: immer zurück auf t('btnAddTrip'))
         let addBtnResetTimer = null;
 
         function flashAddSuccess() {
@@ -1086,22 +1081,20 @@
             const label = document.getElementById('btnAddTripText');
             if (!btn || !label) return;
 
-            // Falls noch ein Reset-Timer läuft: abbrechen, damit wir sauber neu starten
             if (addBtnResetTimer) {
                 clearTimeout(addBtnResetTimer);
                 addBtnResetTimer = null;
             }
 
             btn.classList.add('success');
-            label.textContent = t('toastAdded'); // z.B. "✓ Hinzugefügt"
+            label.textContent = t('toastAdded');
 
             addBtnResetTimer = setTimeout(() => {
                 btn.classList.remove('success');
-                label.textContent = t('btnAddTrip'); // IMMER zurück auf "Fahrt hinzufügen" (bzw. Sprache)
+                label.textContent = t('btnAddTrip'); // immer korrekt (auch nach Sprachwechsel)
                 addBtnResetTimer = null;
             }, 900);
         }
-
 
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -1128,7 +1121,6 @@
             applyTheme(theme);
         }
 
-        // Theme toggle click (FIX)
         if (themeToggleBtn) {
             themeToggleBtn.addEventListener('click', () => {
                 const isDark = document.documentElement.classList.contains('dark');
@@ -1217,17 +1209,12 @@
             });
         }
 
-        // Settings-Modal öffnen/schließen
+        // Settings modal
         openSettings.addEventListener('click', () => { settingsModal.style.display = 'flex'; });
-
         function closeSettingsModal() { settingsModal.style.display = 'none'; }
-
         closeSettingsBtn.addEventListener('click', closeSettingsModal);
         closeSettingsX.addEventListener('click', closeSettingsModal);
-
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) closeSettingsModal();
-        });
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
         // App Update Button
         appUpdateBtn.addEventListener('click', () => { location.reload(); });
@@ -1283,9 +1270,9 @@
 
         addFahrtBtn.addEventListener('click', () => {
             const zahlungsart = zahlungsartSelect.value;
-            const rawAdresse = adresseInput.value.trim();
-            let adresse = rawAdresse;
 
+            // Adresse
+            let adresse = adresseInput.value.trim();
             if (zahlungsart === 'bar') {
                 if (!adresse) {
                     alert('Bitte bei Barzahlung eine Adresse eingeben.');
@@ -1306,6 +1293,7 @@
                 }
             }
 
+            // Bargeld
             let bargeld = 0;
             if (zahlungsart === 'bar') {
                 bargeld = parseEuro(bargeldInput.value);
@@ -1315,6 +1303,7 @@
                 }
             }
 
+            // Zuschlag
             let extraBonus = 0;
             if (dist >= 8) {
                 extraBonus = parseEuro(extra8kmInput.value);
@@ -1353,7 +1342,6 @@
             berechneZusammenfassung();
             saveState();
 
-            // Feedback
             flashAddSuccess();
             showToast(`✓ #${fahrten.length} ${t('toastAdded')}`);
         });
@@ -1383,7 +1371,7 @@
             exportToPdf();
         });
 
-        // Klick-Handling für Trinkgeld, Bearbeiten, Löschen
+        // Event delegation
         fahrtenListe.addEventListener('click', (e) => {
             const tipBtn = e.target.closest('[data-tip-index]');
             if (tipBtn) {
@@ -1436,7 +1424,7 @@
             saveState();
         }
 
-        // FIX: Edit sauber + Bar->Online setzt Bargeld = 0
+        // FIX: Bearbeiten sauber + Bar->Online setzt Bargeld=0
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
 
@@ -1462,12 +1450,11 @@
                 }
             }
 
-            // Bei Online: Adresse intern auf Online-Bestellung (wie beim Add)
+            // Bei Online immer Online-Bestellung setzen
             if (neueZahlungsart === 'online') {
                 neueAdresse = 'Online-Bestellung';
             }
 
-            // Bargeld nur relevant, wenn bar — sonst immer 0 (Bugfix)
             let neuerBargeld = 0;
             if (neueZahlungsart === 'bar') {
                 const bargPrompt = prompt(
@@ -1481,7 +1468,6 @@
                     return;
                 }
             } else {
-                // wenn online: automatisch 0 — kein Prompt nötig
                 neuerBargeld = 0;
             }
 
@@ -1490,6 +1476,7 @@
                 (typeof f.dist === 'number' && f.dist > 0) ? f.dist.toFixed(1).replace('.', ',') : ''
             );
             if (distPrompt === null) return;
+
             let neueDist = 0;
             if (distPrompt.trim() !== '') {
                 neueDist = parseEuro(distPrompt);
@@ -1531,7 +1518,6 @@
                 dist: neueDist,
                 extraBonus: neuerExtraBonus,
                 verguetung: neueVerguetung
-                // createdAt bleibt erhalten
             };
 
             renderFahrten();
@@ -1539,6 +1525,9 @@
             saveState();
         }
 
+        // ✅ NEU: Sortierung für Anzeige -> neueste oben
+        // Wichtig: wir rendern reverse, aber data-Index bleibt der echte Array-Index,
+        // damit Bearbeiten/Löschen/Trinkgeld korrekt bleiben.
         function renderFahrten() {
             if (fahrten.length === 0) {
                 fahrtenListe.innerHTML = '<li class="placeholder">' + t('placeholderNoTrips') + '</li>';
@@ -1546,7 +1535,10 @@
             }
 
             fahrtenListe.innerHTML = '';
-            fahrten.forEach((f, index) => {
+
+            for (let index = fahrten.length - 1; index >= 0; index--) {
+                const f = fahrten[index];
+
                 const li = document.createElement('li');
                 li.className = 'fahrt-item';
 
@@ -1555,6 +1547,7 @@
 
                 const addr = document.createElement('div');
                 addr.className = 'fahrt-adresse';
+                // Nummer bleibt „ID“ der Fahrt (Array-Position + 1). Reihenfolge ist trotzdem neu->alt.
                 addr.textContent = (index + 1) + '. ' + (f.adresse || '');
 
                 const rightMain = document.createElement('div');
@@ -1589,15 +1582,15 @@
                 }
                 left.appendChild(pillD);
 
-                if (f.extraBonus > 0) {
+                if ((f.extraBonus || 0) > 0) {
                     const extraSpan = document.createElement('span');
-                    extraSpan.textContent = '· ' + t('bonusLabel') + ': +' + f.extraBonus.toFixed(2) + ' €';
+                    extraSpan.textContent = '· ' + t('bonusLabel') + ': +' + (f.extraBonus || 0).toFixed(2) + ' €';
                     left.appendChild(extraSpan);
                 }
 
-                if (f.trinkgeld && f.trinkgeld > 0) {
+                if ((f.trinkgeld || 0) > 0) {
                     const trinkSpan = document.createElement('span');
-                    trinkSpan.textContent = '· ' + t('tipLabel') + ': ' + f.trinkgeld.toFixed(2) + ' €';
+                    trinkSpan.textContent = '· ' + t('tipLabel') + ': ' + (f.trinkgeld || 0).toFixed(2) + ' €';
                     left.appendChild(trinkSpan);
                 }
 
@@ -1626,7 +1619,6 @@
                 delBtn.dataset.delIndex = String(index);
                 delBtn.textContent = t('btnDelete');
 
-                // Timestamp (HH:mm) rechts neben Löschen
                 const time = document.createElement('span');
                 time.className = 'fahrt-time';
                 time.textContent = formatTimeHHMM(f.createdAt || new Date());
@@ -1642,7 +1634,7 @@
                 li.appendChild(header);
                 li.appendChild(meta);
                 fahrtenListe.appendChild(li);
-            });
+            }
         }
 
         function berechneZusammenfassung() {
@@ -1859,7 +1851,7 @@
 
             doc.setFontSize(9);
             doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
-            doc.text(`Noch auszuzahlen (abzüglich Bargeld): ${nettoAuszahlung.toFixed(2)} €`, marginX, y);
+            doc.text(`Noch auszuzuzahlen (abzüglich Bargeld): ${nettoAuszahlung.toFixed(2)} €`, marginX, y);
 
             const footerY = 290;
             doc.setFontSize(8);
@@ -1874,9 +1866,7 @@
             doc.save(fileName);
         }
 
-        // -----------------------------------------------
-        // Update-Hinweis anzeigen + Badge setzen
-        // -----------------------------------------------
+        // Update / Badge
         function showUpdateNotification(newVersion) {
             const box = document.getElementById('updateNotice');
             if (!box) return;
