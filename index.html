@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Fahrten Abrechnung</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
     <style>
         :root {
@@ -56,6 +56,20 @@
             margin-top: 2px;
         }
 
+        .section-title {
+            margin: 10px 0 4px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #4b5563;
+        }
+
+        .settings-wrapper {
+            position: relative;
+            display: inline-flex;
+        }
+
         .settings-btn {
             border: none;
             background: rgba(15,23,42,0.05);
@@ -67,19 +81,24 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.08s ease;
         }
 
             .settings-btn:active {
                 transform: scale(0.95);
             }
 
-        .section-title {
-            margin: 10px 0 4px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: #4b5563;
+        .update-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: #ef4444;
+            border: 2px solid #ffffff;
+            box-sizing: border-box;
+            display: none;
         }
 
         .card {
@@ -119,10 +138,6 @@
                 color: #6b7280;
             }
 
-        select {
-            color: #111827;
-        }
-
             input:focus, select:focus {
                 border-color: #2563eb;
                 box-shadow: 0 0 0 1px rgba(37,99,235,0.4);
@@ -145,7 +160,7 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease;
+            transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.15s ease, filter 0.15s ease;
             user-select: none;
             text-decoration: none;
             white-space: nowrap;
@@ -162,6 +177,11 @@
             .btn-primary:active {
                 transform: translateY(1px);
                 box-shadow: 0 6px 14px rgba(37,99,235,0.4);
+            }
+
+            .btn-primary.success {
+                background: linear-gradient(135deg, #16a34a, #22c55e) !important;
+                box-shadow: 0 10px 20px rgba(34,197,94,0.35) !important;
             }
 
         .btn-ghost {
@@ -197,10 +217,15 @@
             color: #374151;
             cursor: pointer;
             line-height: 1.4;
+            transition: transform 0.08s ease, background 0.12s ease;
         }
 
             .btn-small:hover {
                 background: #e5e7eb;
+            }
+
+            .btn-small:active {
+                transform: scale(0.97);
             }
 
             .btn-small.delete {
@@ -208,6 +233,39 @@
                 border-color: #fecaca;
                 background: #fef2f2;
             }
+
+        /* Quick KM Buttons */
+        .quick-km {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+            .quick-km .qbtn {
+                flex: 1;
+                min-width: 60px;
+                padding: 7px 10px;
+                border-radius: 999px;
+                border: 1px solid #d1d5db;
+                background: #ffffff;
+                color: #111827;
+                font-size: 12px;
+                font-weight: 700;
+                cursor: pointer;
+                transition: transform 0.08s ease, background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+                user-select: none;
+            }
+
+                .quick-km .qbtn:active {
+                    transform: scale(0.98);
+                }
+
+                .quick-km .qbtn.active {
+                    border-color: rgba(37,99,235,0.6);
+                    box-shadow: 0 0 0 2px rgba(37,99,235,0.12);
+                    background: rgba(37,99,235,0.08);
+                }
 
         .fahrten-list {
             max-height: 240px;
@@ -218,19 +276,30 @@
         }
 
         .fahrt-item {
-            padding: 6px 4px;
+            padding: 8px 6px;
             border-bottom: 1px solid #e5e7eb;
             font-size: 13px;
+            border-radius: 12px;
+            transition: background 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+            position: relative;
+            touch-action: manipulation;
         }
+
+            .fahrt-item.press {
+                background: rgba(15,23,42,0.04);
+                transform: translateY(-1px);
+                box-shadow: 0 10px 22px rgba(15,23,42,0.08);
+            }
 
         .fahrt-header {
             display: flex;
             justify-content: space-between;
             gap: 6px;
+            align-items: baseline;
         }
 
         .fahrt-adresse {
-            font-weight: 600;
+            font-weight: 700;
             color: #111827;
             flex: 1;
             min-width: 0;
@@ -240,18 +309,18 @@
         }
 
         .fahrt-verg {
-            font-weight: 600;
+            font-weight: 700;
             color: #111827;
             white-space: nowrap;
         }
 
         .fahrt-meta {
-            margin-top: 2px;
+            margin-top: 4px;
             font-size: 12px;
             color: #6b7280;
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
             justify-content: space-between;
         }
@@ -259,7 +328,7 @@
         .fahrt-meta-left {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
         }
 
@@ -273,7 +342,7 @@
 
         .fahrt-time {
             font-size: 11px;
-            opacity: 0.8;
+            opacity: 0.85;
             padding-left: 2px;
             white-space: nowrap;
         }
@@ -281,10 +350,10 @@
         .pill {
             display: inline-flex;
             align-items: center;
-            padding: 1px 7px;
+            padding: 1px 8px;
             border-radius: 999px;
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 700;
         }
 
         .pill-online {
@@ -321,7 +390,7 @@
         }
 
         .summary-value {
-            font-weight: 600;
+            font-weight: 700;
             color: #111827;
         }
 
@@ -354,7 +423,19 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Einstellungen-Modal */
+        /* Update notice */
+        .update-notice {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(37,99,235,0.12);
+            border: 1px solid rgba(37,99,235,0.25);
+            color: #111827;
+            font-size: 12px;
+        }
+
+        /* Settings Modal */
         .settings-modal {
             display: none;
             position: fixed;
@@ -380,7 +461,7 @@
             .settings-card h3 {
                 margin: 0 0 10px;
                 font-size: 16px;
-                font-weight: 700;
+                font-weight: 800;
                 color: #111827;
             }
 
@@ -406,7 +487,12 @@
             cursor: pointer;
             font-size: 14px;
             min-width: 60px;
+            transition: transform 0.08s ease;
         }
+
+            .settings-toggle:active {
+                transform: scale(0.98);
+            }
 
         #languageSelect {
             max-width: 140px;
@@ -420,13 +506,14 @@
             border: none;
             background: #2563eb;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
             cursor: pointer;
+            transition: transform 0.08s ease;
         }
 
             .close-settings:active {
-                transform: scale(0.97);
+                transform: scale(0.98);
             }
 
         .settings-close-x {
@@ -439,6 +526,7 @@
             cursor: pointer;
             color: #6b7280;
             padding: 2px 4px;
+            transition: transform 0.08s ease;
         }
 
             .settings-close-x:active {
@@ -457,7 +545,199 @@
             }
         }
 
-        /* Dark-Mode */
+        .version-label {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 11px;
+            opacity: 0.7;
+            color: #4b5563;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 18px;
+            transform: translateX(-50%) translateY(8px);
+            background: rgba(15,23,42,0.92);
+            color: #e5e7eb;
+            padding: 10px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 2500;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            max-width: 92vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+            .toast.show {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+        /* Reset prompt modal */
+        .prompt-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1200;
+        }
+
+        .prompt-card {
+            position: relative;
+            background: #ffffff;
+            padding: 16px 16px 12px;
+            border-radius: 18px;
+            width: 86%;
+            max-width: 360px;
+            box-shadow: 0 18px 35px rgba(15,23,42,0.45);
+            animation: settingsSlideUp 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+
+        .prompt-title {
+            margin: 0 0 6px;
+            font-size: 16px;
+            font-weight: 900;
+            color: #111827;
+            letter-spacing: 0.01em;
+        }
+
+        .prompt-text {
+            margin: 0 0 12px;
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.35;
+        }
+
+        .prompt-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+            .prompt-actions .btn {
+                flex: 1;
+                padding: 8px 10px;
+                font-size: 13px;
+            }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(239,68,68,0.25);
+        }
+
+            .btn-danger:active {
+                transform: translateY(1px);
+            }
+
+        /* Action Sheet (Long Press) */
+        .sheet-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.45);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1300;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        .sheet {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            box-shadow: 0 18px 35px rgba(15,23,42,0.45);
+            overflow: hidden;
+            animation: sheetUp 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes sheetUp {
+            from {
+                transform: translateY(18px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .sheet-head {
+            padding: 12px 14px 10px;
+            border-bottom: 1px solid rgba(15,23,42,0.08);
+        }
+
+        .sheet-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 900;
+            color: #111827;
+            letter-spacing: 0.01em;
+        }
+
+        .sheet-sub {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #6b7280;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sheet-actions {
+            padding: 10px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .sheet-btn {
+            width: 100%;
+            border: 1px solid rgba(15,23,42,0.12);
+            background: rgba(255,255,255,0.9);
+            color: #111827;
+            padding: 12px 12px;
+            border-radius: 14px;
+            font-weight: 900;
+            font-size: 14px;
+            cursor: pointer;
+            transition: transform 0.08s ease, filter 0.12s ease;
+        }
+
+            .sheet-btn:active {
+                transform: scale(0.99);
+                filter: brightness(0.98);
+            }
+
+            .sheet-btn.delete {
+                background: rgba(239,68,68,0.08);
+                border-color: rgba(239,68,68,0.25);
+                color: #b91c1c;
+            }
+
+            .sheet-btn.cancel {
+                background: rgba(37,99,235,0.10);
+                border-color: rgba(37,99,235,0.25);
+                color: #1d4ed8;
+            }
+
+        /* Dark Mode */
         .dark body {
             background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
         }
@@ -503,6 +783,14 @@
             color: #e5e7eb;
         }
 
+        .dark .summary-green {
+            color: #10b981 !important;
+        }
+
+        .dark .summary-red {
+            color: #ef4444 !important;
+        }
+
         .dark .settings-card {
             background: #0f172a;
             color: #e2e8f0;
@@ -542,97 +830,16 @@
                 color: #fee2e2;
             }
 
-        .dark .fahrt-adresse,
-        .dark .fahrt-verg {
+        .dark .fahrt-adresse, .dark .fahrt-verg {
             color: #e5e7eb;
-        }
-
-        .dark .summary-green {
-            color: #10b981 !important;
-        }
-
-        .dark .summary-red {
-            color: #ef4444 !important;
-        }
-
-        .settings-wrapper {
-            position: relative;
-            display: inline-flex;
-        }
-
-        .update-badge {
-            position: absolute;
-            top: -3px;
-            right: -3px;
-            width: 12px;
-            height: 12px;
-            border-radius: 999px;
-            background: #ef4444;
-            border: 2px solid #ffffff;
-            box-sizing: border-box;
         }
 
         .dark .update-badge {
             border-color: #0f172a;
         }
 
-        .version-label {
-            text-align: center;
-            margin-top: 8px;
-            font-size: 11px;
-            opacity: 0.7;
-            color: #4b5563;
-        }
-
         .dark .version-label {
             color: #9ca3af;
-        }
-
-        /* Button success state */
-        .btn-primary.success {
-            background: linear-gradient(135deg, #16a34a, #22c55e) !important;
-            box-shadow: 0 10px 20px rgba(34,197,94,0.35) !important;
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            left: 50%;
-            bottom: 18px;
-            transform: translateX(-50%) translateY(8px);
-            background: rgba(15,23,42,0.92);
-            color: #e5e7eb;
-            padding: 10px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            box-shadow: 0 18px 40px rgba(0,0,0,0.35);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.18s ease, transform 0.18s ease;
-            z-index: 2500;
-            backdrop-filter: blur(10px);
-            text-align: center;
-            max-width: 92vw;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-            .toast.show {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-
-        /* Update notice box */
-        .update-notice {
-            display: none;
-            margin-top: 10px;
-            padding: 10px 12px;
-            border-radius: 14px;
-            background: rgba(37,99,235,0.12);
-            border: 1px solid rgba(37,99,235,0.25);
-            color: #111827;
-            font-size: 12px;
         }
 
         .dark .update-notice {
@@ -640,66 +847,6 @@
             border-color: rgba(37,99,235,0.28);
             color: #e5e7eb;
         }
-
-        /* Reset prompt modal */
-        .prompt-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,0.45);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1200;
-        }
-
-        .prompt-card {
-            position: relative;
-            background: #ffffff;
-            padding: 16px 16px 12px;
-            border-radius: 18px;
-            width: 86%;
-            max-width: 360px;
-            box-shadow: 0 18px 35px rgba(15,23,42,0.45);
-            animation: settingsSlideUp 0.24s cubic-bezier(0.22, 0.61, 0.36, 1);
-        }
-
-        .prompt-title {
-            margin: 0 0 6px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: 0.01em;
-        }
-
-        .prompt-text {
-            margin: 0 0 12px;
-            font-size: 13px;
-            color: #4b5563;
-            line-height: 1.35;
-        }
-
-        .prompt-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-            .prompt-actions .btn {
-                flex: 1;
-                padding: 8px 10px;
-                font-size: 13px;
-            }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            color: #fff;
-            box-shadow: 0 10px 20px rgba(239,68,68,0.25);
-        }
-
-            .btn-danger:active {
-                transform: translateY(1px);
-            }
 
         .dark .prompt-card {
             background: #0f172a;
@@ -712,6 +859,58 @@
         .dark .prompt-text {
             color: #9ca3af;
         }
+
+        .dark .quick-km .qbtn {
+            background: #020617;
+            border-color: #374151;
+            color: #e5e7eb;
+        }
+
+            .dark .quick-km .qbtn.active {
+                border-color: rgba(96,165,250,0.6);
+                box-shadow: 0 0 0 2px rgba(96,165,250,0.14);
+                background: rgba(96,165,250,0.12);
+            }
+
+        .dark .fahrt-item.press {
+            background: rgba(255,255,255,0.05);
+            box-shadow: 0 14px 28px rgba(0,0,0,0.5);
+        }
+
+        .dark .sheet {
+            background: rgba(15,23,42,0.96);
+            box-shadow: 0 18px 35px rgba(0,0,0,0.7);
+        }
+
+        .dark .sheet-head {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+
+        .dark .sheet-title {
+            color: #e5e7eb;
+        }
+
+        .dark .sheet-sub {
+            color: #9ca3af;
+        }
+
+        .dark .sheet-btn {
+            background: rgba(2,6,23,0.9);
+            border-color: rgba(255,255,255,0.08);
+            color: #e5e7eb;
+        }
+
+            .dark .sheet-btn.delete {
+                background: rgba(239,68,68,0.14);
+                border-color: rgba(239,68,68,0.25);
+                color: #fecaca;
+            }
+
+            .dark .sheet-btn.cancel {
+                background: rgba(37,99,235,0.18);
+                border-color: rgba(37,99,235,0.30);
+                color: #bfdbfe;
+            }
     </style>
 </head>
 
@@ -722,8 +921,8 @@
                 <div class="title" id="titleText">Fahrten &amp; Stunden</div>
 
                 <div class="settings-wrapper">
-                    <button class="settings-btn" id="openSettings" type="button">⚙️</button>
-                    <span id="updateBadge" class="update-badge" style="display:none;"></span>
+                    <button class="settings-btn" id="openSettings" type="button" aria-label="Einstellungen">⚙️</button>
+                    <span id="updateBadge" class="update-badge"></span>
                 </div>
             </div>
 
@@ -747,22 +946,31 @@
 
             <label>
                 <span id="labelAddressText">Adresse</span>
-                <input type="text" id="adresse" placeholder="bei Online nicht nötig">
+                <input type="text" id="adresse" placeholder="bei Online nicht nötig" />
             </label>
 
             <label>
                 <span id="labelCashText">Bargeldbetrag (€)</span>
-                <input type="number" id="bargeld" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Barzahlung" disabled>
+                <input type="number" id="bargeld" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Barzahlung" disabled />
             </label>
 
             <label>
                 <span id="labelDistanceText">Entfernung (km)</span>
-                <input type="number" id="entfernung" step="0.1" min="0" inputmode="decimal" placeholder="leer = unter 5 km">
+                <input type="number" id="entfernung" step="0.1" min="0" inputmode="decimal" placeholder="leer = unter 5 km" />
             </label>
+
+            <!-- Schnell-Buttons -->
+            <div class="quick-km" id="quickKmRow" aria-label="Schnell-Auswahl km">
+                <button class="qbtn" type="button" data-km="lt5">&lt; 5</button>
+                <button class="qbtn" type="button" data-km="5">5</button>
+                <button class="qbtn" type="button" data-km="7">7</button>
+                <button class="qbtn" type="button" data-km="7.5">7.5</button>
+                <button class="qbtn" type="button" data-km="8+">8+</button>
+            </div>
 
             <label>
                 <span id="labelExtra8Text">Zuschlag ab 8 km (€)</span>
-                <input type="number" id="extra8km" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Entfernungen ≥ 8 km" disabled>
+                <input type="number" id="extra8km" step="0.01" min="0" inputmode="decimal" placeholder="nur bei Entfernungen ≥ 8 km" disabled />
             </label>
 
             <button class="btn btn-primary" id="addFahrtBtn">
@@ -783,12 +991,12 @@
         <div class="card">
             <label>
                 <span id="labelHoursText">Stunden gearbeitet</span>
-                <input type="number" id="stunden" step="0.25" min="0" inputmode="decimal" value="0">
+                <input type="number" id="stunden" step="0.25" min="0" inputmode="decimal" value="0" />
             </label>
 
             <label>
                 <span id="labelHourlyWageText">Stundenlohn (€)</span>
-                <input type="number" id="stundenlohn" step="0.01" min="0" inputmode="decimal" value="7.5">
+                <input type="number" id="stundenlohn" step="0.01" min="0" inputmode="decimal" value="7.5" />
             </label>
 
             <div style="margin-top:8px;">
@@ -826,7 +1034,7 @@
                     <div class="summary-label" id="summaryTripsWageLabelText">Vergütung Fahrten</div>
                     <div class="summary-value money" id="lohnFahrten">0,00 €</div>
                 </div>
-                <hr>
+                <hr />
                 <div class="summary-row">
                     <div class="summary-label" id="summaryTotalLabelText">Gesamt (Stunden + Fahrten)</div>
                     <div class="summary-value money summary-value-strong" id="gesamtBrutto">0,00 €</div>
@@ -852,7 +1060,7 @@
         </div>
     </div>
 
-    <!-- Einstellungen-Popup -->
+    <!-- Einstellungen -->
     <div class="settings-modal" id="settingsModal">
         <div class="settings-card">
             <button class="settings-close-x" id="closeSettingsX" type="button">×</button>
@@ -884,7 +1092,7 @@
         </div>
     </div>
 
-    <!-- Reset Prompt Modal -->
+    <!-- Reset Prompt -->
     <div class="prompt-modal" id="resetPromptModal">
         <div class="prompt-card">
             <div class="prompt-title" id="resetPromptTitle">Neuer Tag erkannt</div>
@@ -895,6 +1103,22 @@
             <div class="prompt-actions">
                 <button class="btn btn-outline" id="resetPromptLater" type="button">Später</button>
                 <button class="btn btn-danger" id="resetPromptNow" type="button">Jetzt zurücksetzen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Sheet (Long Press) -->
+    <div class="sheet-modal" id="actionSheetModal" aria-hidden="true">
+        <div class="sheet" role="dialog" aria-modal="true" aria-label="Aktionen">
+            <div class="sheet-head">
+                <p class="sheet-title" id="sheetTitle">Aktionen</p>
+                <p class="sheet-sub" id="sheetSub">—</p>
+            </div>
+            <div class="sheet-actions">
+                <button class="sheet-btn" id="sheetTipBtn" type="button">Trinkgeld</button>
+                <button class="sheet-btn" id="sheetEditBtn" type="button">Bearbeiten</button>
+                <button class="sheet-btn delete" id="sheetDeleteBtn" type="button">Löschen</button>
+                <button class="sheet-btn cancel" id="sheetCancelBtn" type="button">Abbrechen</button>
             </div>
         </div>
     </div>
@@ -910,7 +1134,7 @@
         const STORAGE_KEY = 'fahrtenApp_v4';
         const THEME_KEY = 'fahrtenApp_theme';
         const LANG_KEY = 'fahrtenApp_lang';
-        const RESET_PROMPT_SHOWN_TODAY_KEY = 'fahrtenApp_resetPromptShownForDate'; // YYYY-MM-DD (local)
+        const RESET_PROMPT_SHOWN_TODAY_KEY = 'fahrtenApp_resetPromptShownForDate'; // YYYY-MM-DD
 
         const translations = {
             de: {
@@ -932,6 +1156,8 @@
                 distancePlaceholder: 'leer = unter 5 km',
                 extra8Placeholder: 'nur bei Entfernungen ≥ 8 km',
                 btnAddTrip: 'Fahrt hinzufügen',
+                toastAdded: '✓ Hinzugefügt',
+
                 summaryTrips: 'Anzahl Fahrten',
                 summaryTripsCash: 'davon Bar',
                 summaryTripsOver5: 'Fahrten mit Zuschlag (ab 5 km)',
@@ -942,30 +1168,37 @@
                 summaryTripsWage: 'Vergütung Fahrten',
                 summaryTotal: 'Gesamt (Stunden + Fahrten)',
                 summaryNet: 'Noch auszuzahlen (− Bargeld)',
+
                 infoNote: '* Trinkgeld wird nicht von der Auszahlung abgezogen und nicht im PDF aufgeführt.',
                 btnReset: 'Alles zurücksetzen',
                 btnExport: 'Als PDF exportieren',
                 footerNote: 'Basis: 1,50 € pro Fahrt · Zuschläge: ab 5 km +0,50 €, ab 7 km +1 €, ab 7,5 km +1,50 €, ab 8 km manueller Betrag',
+
                 settingsTitle: 'Einstellungen',
                 settingsDarkMode: 'Dark Mode',
                 settingsLanguage: 'Sprache',
                 settingsUpdate: 'App Update',
                 settingsDone: 'Fertig',
+
                 pillBar: 'Bar',
                 pillOnline: 'Online',
+
                 placeholderNoTrips: 'Noch keine Fahrten erfasst.',
                 bonusLabel: 'Zuschlag',
                 tipLabel: 'Trinkgeld',
                 fareLabel: 'Fahrt',
+
                 btnTip: 'Trinkgeld',
                 btnEdit: 'Bearbeiten',
                 btnDelete: 'Löschen',
-                toastAdded: '✓ Hinzugefügt',
 
                 resetPromptTitle: 'Neuer Tag erkannt',
                 resetPromptText: 'Deine letzte Fahrt ist von einem früheren Datum. Möchtest du alle Daten zurücksetzen?',
                 resetPromptLater: 'Später',
-                resetPromptNow: 'Jetzt zurücksetzen'
+                resetPromptNow: 'Jetzt zurücksetzen',
+
+                sheetTitle: 'Aktionen',
+                sheetCancel: 'Abbrechen'
             },
             en: {
                 title: 'Rides & Hours',
@@ -986,6 +1219,8 @@
                 distancePlaceholder: 'empty = under 5 km',
                 extra8Placeholder: 'only for distances ≥ 8 km',
                 btnAddTrip: 'Add ride',
+                toastAdded: '✓ Added',
+
                 summaryTrips: 'Number of rides',
                 summaryTripsCash: 'of which cash',
                 summaryTripsOver5: 'Rides with extra (from 5 km)',
@@ -996,30 +1231,37 @@
                 summaryTripsWage: 'Ride compensation',
                 summaryTotal: 'Total (hours + rides)',
                 summaryNet: 'Still to be paid (− cash)',
+
                 infoNote: '* Tips are not subtracted from payout and are not shown in the PDF.',
                 btnReset: 'Reset all',
                 btnExport: 'Export as PDF',
                 footerNote: 'Base: 1.50 € per ride · Extras: from 5 km +0.50 €, from 7 km +1 €, from 7.5 km +1.50 €, from 8 km manual amount',
+
                 settingsTitle: 'Settings',
                 settingsDarkMode: 'Dark mode',
                 settingsLanguage: 'Language',
                 settingsUpdate: 'App update',
                 settingsDone: 'Done',
+
                 pillBar: 'Cash',
                 pillOnline: 'Online',
+
                 placeholderNoTrips: 'No rides recorded yet.',
                 bonusLabel: 'Extra',
                 tipLabel: 'Tip',
                 fareLabel: 'Ride',
+
                 btnTip: 'Tip',
                 btnEdit: 'Edit',
                 btnDelete: 'Delete',
-                toastAdded: '✓ Added',
 
                 resetPromptTitle: 'New day detected',
                 resetPromptText: 'Your last ride is from an earlier date. Do you want to reset all data?',
                 resetPromptLater: 'Later',
-                resetPromptNow: 'Reset now'
+                resetPromptNow: 'Reset now',
+
+                sheetTitle: 'Actions',
+                sheetCancel: 'Cancel'
             },
             ru: {
                 title: 'Поездки и часы',
@@ -1040,6 +1282,8 @@
                 distancePlaceholder: 'пусто = меньше 5 км',
                 extra8Placeholder: 'только для расстояний ≥ 8 км',
                 btnAddTrip: 'Добавить поездку',
+                toastAdded: '✓ Добавлено',
+
                 summaryTrips: 'Количество поездок',
                 summaryTripsCash: 'из них наличные',
                 summaryTripsOver5: 'Поездки с надбавкой (от 5 км)',
@@ -1050,30 +1294,37 @@
                 summaryTripsWage: 'Оплата за поездки',
                 summaryTotal: 'Всего (часы + поездки)',
                 summaryNet: 'К выплате (− наличные)',
+
                 infoNote: '* Чаевые не вычитаются из выплаты и не показываются в PDF.',
                 btnReset: 'Сбросить всё',
                 btnExport: 'PDF-экспорт',
                 footerNote: 'База: 1,50 € за поездку · Надбавки: от 5 км +0,50 €, от 7 км +1 €, от 7,5 км +1,50 €, от 8 км — вручную',
+
                 settingsTitle: 'Настройки',
                 settingsDarkMode: 'Тёмная тема',
                 settingsLanguage: 'Язык',
                 settingsUpdate: 'Обновить приложение',
                 settingsDone: 'Готово',
+
                 pillBar: 'Наличные',
                 pillOnline: 'Онлайн',
+
                 placeholderNoTrips: 'Поездки ещё не добавлены.',
                 bonusLabel: 'Надбавка',
                 tipLabel: 'Чаевые',
                 fareLabel: 'Поездка',
+
                 btnTip: 'Чаевые',
                 btnEdit: 'Изменить',
                 btnDelete: 'Удалить',
-                toastAdded: '✓ Добавлено',
 
                 resetPromptTitle: 'Обнаружен новый день',
                 resetPromptText: 'Последняя поездка была в предыдущую дату. Сбросить все данные?',
                 resetPromptLater: 'Позже',
-                resetPromptNow: 'Сбросить сейчас'
+                resetPromptNow: 'Сбросить сейчас',
+
+                sheetTitle: 'Действия',
+                sheetCancel: 'Отмена'
             }
         };
 
@@ -1085,6 +1336,7 @@
             return pack[key] || translations.de[key] || key;
         }
 
+        // DOM
         const openSettings = document.getElementById('openSettings');
         const settingsModal = document.getElementById('settingsModal');
         const closeSettingsBtn = document.getElementById('closeSettings');
@@ -1140,6 +1392,8 @@
         const addFahrtBtn = document.getElementById('addFahrtBtn');
         const fahrtenListe = document.getElementById('fahrtenListe');
 
+        const quickKmRow = document.getElementById('quickKmRow');
+
         const stundenInput = document.getElementById('stunden');
         const stundenlohnInput = document.getElementById('stundenlohn');
         const anzahlFahrtenSpan = document.getElementById('anzahlFahrten');
@@ -1155,12 +1409,21 @@
         const resetBtn = document.getElementById('resetBtn');
         const exportPdfBtn = document.getElementById('exportPdfBtn');
 
-        // Reset prompt elements
+        // Reset prompt
         const resetPromptModal = document.getElementById('resetPromptModal');
         const resetPromptTitle = document.getElementById('resetPromptTitle');
         const resetPromptText = document.getElementById('resetPromptText');
         const resetPromptLater = document.getElementById('resetPromptLater');
         const resetPromptNow = document.getElementById('resetPromptNow');
+
+        // Action Sheet
+        const actionSheetModal = document.getElementById('actionSheetModal');
+        const sheetTitle = document.getElementById('sheetTitle');
+        const sheetSub = document.getElementById('sheetSub');
+        const sheetTipBtn = document.getElementById('sheetTipBtn');
+        const sheetEditBtn = document.getElementById('sheetEditBtn');
+        const sheetDeleteBtn = document.getElementById('sheetDeleteBtn');
+        const sheetCancelBtn = document.getElementById('sheetCancelBtn');
 
         function parseEuro(value) {
             if (value === null || value === undefined || value === '') return 0;
@@ -1190,12 +1453,19 @@
             return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
         }
 
-        // Button-Feedback + Toast (FIX: immer zurück auf t('btnAddTrip'))
+        // Haptic (best-effort)
+        function hapticLight() {
+            try {
+                if (navigator.vibrate) navigator.vibrate(10);
+            } catch (e) { /* ignore */ }
+        }
+
+        // Toast + button feedback
         let addBtnResetTimer = null;
 
         function flashAddSuccess() {
-            const btn = document.getElementById('addFahrtBtn');
-            const label = document.getElementById('btnAddTripText');
+            const btn = addFahrtBtn;
+            const label = btnAddTripText;
             if (!btn || !label) return;
 
             if (addBtnResetTimer) {
@@ -1238,14 +1508,13 @@
             applyTheme(theme);
         }
 
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                const isDark = document.documentElement.classList.contains('dark');
-                applyTheme(isDark ? 'light' : 'dark');
-            });
-        }
+        themeToggleBtn.addEventListener('click', () => {
+            hapticLight();
+            const isDark = document.documentElement.classList.contains('dark');
+            applyTheme(isDark ? 'light' : 'dark');
+        });
 
-        // Language handling
+        // Language
         function updatePlaceholders() {
             if (zahlungsartSelect.value === 'bar') {
                 adresseInput.placeholder = t('addressPlaceholderBar');
@@ -1300,11 +1569,16 @@
 
             placeholderText.textContent = pack.placeholderNoTrips;
 
-            // Reset prompt texts
             resetPromptTitle.textContent = pack.resetPromptTitle;
             resetPromptText.textContent = pack.resetPromptText;
             resetPromptLater.textContent = pack.resetPromptLater;
             resetPromptNow.textContent = pack.resetPromptNow;
+
+            sheetTitle.textContent = pack.sheetTitle;
+            sheetCancelBtn.textContent = pack.sheetCancel;
+            sheetTipBtn.textContent = pack.btnTip;
+            sheetEditBtn.textContent = pack.btnEdit;
+            sheetDeleteBtn.textContent = pack.btnDelete;
 
             updatePlaceholders();
         }
@@ -1316,32 +1590,41 @@
                 if (stored && translations[stored]) lang = stored;
             } catch (e) { }
             currentLang = lang;
-            if (languageSelect) languageSelect.value = lang;
+            languageSelect.value = lang;
             applyLanguage();
         }
 
-        if (languageSelect) {
-            languageSelect.addEventListener('change', (e) => {
-                const lang = e.target.value;
-                if (!translations[lang]) return;
-                currentLang = lang;
-                try { localStorage.setItem(LANG_KEY, lang); } catch (e2) { }
-                applyLanguage();
-                renderFahrten();
-                berechneZusammenfassung();
-            });
-        }
+        languageSelect.addEventListener('change', (e) => {
+            const lang = e.target.value;
+            if (!translations[lang]) return;
+            currentLang = lang;
+            try { localStorage.setItem(LANG_KEY, lang); } catch (e2) { }
+            applyLanguage();
+            renderFahrten();
+            berechneZusammenfassung();
+        });
 
-        // Settings modal
-        openSettings.addEventListener('click', () => { settingsModal.style.display = 'flex'; });
+        // Settings Modal
+        openSettings.addEventListener('click', () => {
+            hapticLight();
+            settingsModal.style.display = 'flex';
+        });
+
         function closeSettingsModal() { settingsModal.style.display = 'none'; }
-        closeSettingsBtn.addEventListener('click', closeSettingsModal);
-        closeSettingsX.addEventListener('click', closeSettingsModal);
-        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
-        // App Update Button
-        appUpdateBtn.addEventListener('click', () => { location.reload(); });
+        closeSettingsBtn.addEventListener('click', () => { hapticLight(); closeSettingsModal(); });
+        closeSettingsX.addEventListener('click', () => { hapticLight(); closeSettingsModal(); });
 
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) closeSettingsModal();
+        });
+
+        appUpdateBtn.addEventListener('click', () => {
+            hapticLight();
+            location.reload();
+        });
+
+        // Storage
         function loadState() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -1368,16 +1651,17 @@
             }
         }
 
-        function resetAllData(skipConfirm = true) {
-            // skipConfirm existiert, damit du es auch aus dem Button nutzen kannst (mit confirm)
+        function resetAllData() {
             fahrten = [];
             stundenInput.value = '0';
             stundenlohnInput.value = '7.5';
+            clearQuickKmActive();
             renderFahrten();
             berechneZusammenfassung();
             saveState();
         }
 
+        // Payment change
         zahlungsartSelect.addEventListener('change', () => {
             if (zahlungsartSelect.value === 'bar') {
                 bargeldInput.disabled = false;
@@ -1391,6 +1675,7 @@
             updatePlaceholders();
         });
 
+        // Distance input enables extra8
         entfernungInput.addEventListener('input', () => {
             const dist = parseEuro(entfernungInput.value);
             if (dist >= 8) {
@@ -1399,12 +1684,68 @@
                 extra8kmInput.disabled = true;
                 extra8kmInput.value = '';
             }
+            // quick-km active visual sync
+            syncQuickKmActiveFromInput();
         });
 
+        // Quick KM Buttons
+        function clearQuickKmActive() {
+            if (!quickKmRow) return;
+            quickKmRow.querySelectorAll('.qbtn').forEach(b => b.classList.remove('active'));
+        }
+
+        function setQuickKmActiveByData(value) {
+            clearQuickKmActive();
+            const btn = quickKmRow.querySelector(`.qbtn[data-km="${CSS.escape(value)}"]`);
+            if (btn) btn.classList.add('active');
+        }
+
+        function syncQuickKmActiveFromInput() {
+            const raw = (entfernungInput.value || '').trim();
+            if (!raw) {
+                setQuickKmActiveByData('lt5');
+                return;
+            }
+            const v = parseEuro(raw);
+            if (Math.abs(v - 5) < 0.01) setQuickKmActiveByData('5');
+            else if (Math.abs(v - 7) < 0.01) setQuickKmActiveByData('7');
+            else if (Math.abs(v - 7.5) < 0.01) setQuickKmActiveByData('7.5');
+            else if (v >= 8) setQuickKmActiveByData('8+');
+            else clearQuickKmActive();
+        }
+
+        quickKmRow.addEventListener('click', (e) => {
+            const btn = e.target.closest('.qbtn');
+            if (!btn) return;
+
+            hapticLight();
+
+            const key = btn.dataset.km;
+
+            if (key === 'lt5') {
+                entfernungInput.value = '';
+                extra8kmInput.value = '';
+                extra8kmInput.disabled = true;
+                setQuickKmActiveByData('lt5');
+            } else if (key === '8+') {
+                entfernungInput.value = '8';
+                extra8kmInput.disabled = false;
+                setQuickKmActiveByData('8+');
+                // Fokus ins Zuschlag-Feld
+                setTimeout(() => extra8kmInput.focus(), 0);
+            } else {
+                entfernungInput.value = String(key);
+                extra8kmInput.value = '';
+                extra8kmInput.disabled = true;
+                setQuickKmActiveByData(String(key));
+            }
+        });
+
+        // Add ride
         addFahrtBtn.addEventListener('click', () => {
             const zahlungsart = zahlungsartSelect.value;
 
-            // Adresse
+            // address
             let adresse = adresseInput.value.trim();
             if (zahlungsart === 'bar') {
                 if (!adresse) {
@@ -1415,10 +1756,10 @@
                 adresse = 'Online-Bestellung';
             }
 
-            // Entfernung: leer = unter 5 km
+            // distance: empty -> <5
             let dist = 0;
-            const distRaw = entfernungInput.value;
-            if (distRaw && distRaw.trim() !== '') {
+            const distRaw = (entfernungInput.value || '').trim();
+            if (distRaw !== '') {
                 dist = parseEuro(distRaw);
                 if (dist < 0) {
                     alert('Entfernung darf nicht negativ sein.');
@@ -1426,7 +1767,7 @@
                 }
             }
 
-            // Bargeld
+            // cash
             let bargeld = 0;
             if (zahlungsart === 'bar') {
                 bargeld = parseEuro(bargeldInput.value);
@@ -1436,7 +1777,7 @@
                 }
             }
 
-            // Zuschlag
+            // bonus logic
             let extraBonus = 0;
             if (dist >= 8) {
                 extraBonus = parseEuro(extra8kmInput.value);
@@ -1465,12 +1806,14 @@
                 createdAt: new Date().toISOString()
             });
 
+            // reset inputs
             adresseInput.value = '';
             entfernungInput.value = '';
             extra8kmInput.value = '';
             extra8kmInput.disabled = true;
             if (zahlungsart === 'bar') bargeldInput.value = '';
 
+            setQuickKmActiveByData('lt5'); // default back
             renderFahrten();
             berechneZusammenfassung();
             saveState();
@@ -1479,8 +1822,10 @@
             showToast(t('toastAdded'));
         });
 
+        // Reset button
         resetBtn.addEventListener('click', () => {
             if (!confirm(t('btnReset') + '?')) return;
+            hapticLight();
             resetAllData();
         });
 
@@ -1499,12 +1844,70 @@
             exportToPdf();
         });
 
-        // Event delegation
+        // --- Long press actions ---
+        let longPressTimer = null;
+        let longPressIndex = null;
+        let pressedEl = null;
+
+        function openActionSheet(index) {
+            longPressIndex = index;
+            const f = fahrten[index];
+            if (!f) return;
+
+            sheetTitle.textContent = t('sheetTitle');
+            sheetSub.textContent = `${(index + 1)}. ${f.adresse || ''}`;
+
+            actionSheetModal.style.display = 'flex';
+            actionSheetModal.setAttribute('aria-hidden', 'false');
+            hapticLight();
+        }
+
+        function closeActionSheet() {
+            actionSheetModal.style.display = 'none';
+            actionSheetModal.setAttribute('aria-hidden', 'true');
+            longPressIndex = null;
+        }
+
+        actionSheetModal.addEventListener('click', (e) => {
+            if (e.target === actionSheetModal) closeActionSheet();
+        });
+
+        sheetCancelBtn.addEventListener('click', () => { hapticLight(); closeActionSheet(); });
+
+        sheetTipBtn.addEventListener('click', () => {
+            if (longPressIndex === null) return;
+            hapticLight();
+            closeActionSheet();
+            handleTrinkgeld(longPressIndex);
+        });
+
+        sheetEditBtn.addEventListener('click', () => {
+            if (longPressIndex === null) return;
+            hapticLight();
+            closeActionSheet();
+            handleEditFahrt(longPressIndex);
+        });
+
+        sheetDeleteBtn.addEventListener('click', () => {
+            if (longPressIndex === null) return;
+            hapticLight();
+            const ok = confirm('Diese Fahrt wirklich löschen?');
+            closeActionSheet();
+            if (!ok) return;
+            fahrten.splice(longPressIndex, 1);
+            renderFahrten();
+            berechneZusammenfassung();
+            saveState();
+            showToast('✓');
+        });
+
+        // Click actions (small buttons)
         fahrtenListe.addEventListener('click', (e) => {
             const tipBtn = e.target.closest('[data-tip-index]');
             if (tipBtn) {
                 const idx = parseInt(tipBtn.dataset.tipIndex, 10);
                 if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                hapticLight();
                 handleTrinkgeld(idx);
                 return;
             }
@@ -1513,6 +1916,7 @@
             if (editBtn) {
                 const idx = parseInt(editBtn.dataset.editIndex, 10);
                 if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                hapticLight();
                 handleEditFahrt(idx);
                 return;
             }
@@ -1521,16 +1925,55 @@
             if (delBtn) {
                 const idx = parseInt(delBtn.dataset.delIndex, 10);
                 if (!Number.isInteger(idx) || !fahrten[idx]) return;
+                hapticLight();
                 if (confirm('Diese Fahrt wirklich löschen?')) {
                     fahrten.splice(idx, 1);
                     renderFahrten();
                     berechneZusammenfassung();
                     saveState();
                 }
-                return;
             }
         });
 
+        // Pointer-based long press on list item (excluding button taps)
+        fahrtenListe.addEventListener('pointerdown', (e) => {
+            const li = e.target.closest('.fahrt-item');
+            if (!li) return;
+
+            // don't long-press when pressing a button
+            if (e.target.closest('button')) return;
+
+            const idx = parseInt(li.dataset.index, 10);
+            if (!Number.isInteger(idx) || !fahrten[idx]) return;
+
+            pressedEl = li;
+            pressedEl.classList.add('press');
+
+            longPressTimer = setTimeout(() => {
+                longPressTimer = null;
+                openActionSheet(idx);
+            }, 450);
+        });
+
+        function cancelLongPress() {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+            if (pressedEl) {
+                pressedEl.classList.remove('press');
+                pressedEl = null;
+            }
+        }
+
+        fahrtenListe.addEventListener('pointerup', cancelLongPress);
+        fahrtenListe.addEventListener('pointercancel', cancelLongPress);
+        fahrtenListe.addEventListener('pointermove', (e) => {
+            // if user scrolls, cancel
+            if (Math.abs(e.movementY) > 4) cancelLongPress();
+        });
+
+        // Trinkgeld + Edit
         function handleTrinkgeld(idx) {
             const f = fahrten[idx];
             const current = f.trinkgeld || 0;
@@ -1552,7 +1995,6 @@
             saveState();
         }
 
-        // FIX: Bearbeiten sauber + Bar->Online setzt Bargeld=0
         function handleEditFahrt(idx) {
             const f = fahrten[idx];
 
@@ -1568,14 +2010,12 @@
                 'Zahlungsart (online/bar) – leer lassen, um unverändert zu lassen:',
                 f.zahlungsart
             );
+
             let neueZahlungsart = f.zahlungsart;
             if (zahlPrompt !== null && zahlPrompt.trim() !== '') {
                 const z = zahlPrompt.trim().toLowerCase();
-                if (z === 'online' || z === 'bar') {
-                    neueZahlungsart = z;
-                } else {
-                    alert('Ungültige Zahlungsart, es bleibt bei: ' + f.zahlungsart);
-                }
+                if (z === 'online' || z === 'bar') neueZahlungsart = z;
+                else alert('Ungültige Zahlungsart, es bleibt bei: ' + f.zahlungsart);
             }
 
             if (neueZahlungsart === 'online') {
@@ -1652,7 +2092,7 @@
             saveState();
         }
 
-        // ✅ Neueste oben rendern, Datenindex bleibt korrekt
+        // Render newest on top
         function renderFahrten() {
             if (fahrten.length === 0) {
                 fahrtenListe.innerHTML = '<li class="placeholder">' + t('placeholderNoTrips') + '</li>';
@@ -1666,6 +2106,7 @@
 
                 const li = document.createElement('li');
                 li.className = 'fahrt-item';
+                li.dataset.index = String(index);
 
                 const header = document.createElement('div');
                 header.className = 'fahrt-header';
@@ -1713,14 +2154,14 @@
                 }
 
                 if ((f.trinkgeld || 0) > 0) {
-                    const trinkSpan = document.createElement('span');
-                    trinkSpan.textContent = '· ' + t('tipLabel') + ': ' + (f.trinkgeld || 0).toFixed(2) + ' €';
-                    left.appendChild(trinkSpan);
+                    const tipSpan = document.createElement('span');
+                    tipSpan.textContent = '· ' + t('tipLabel') + ': ' + (f.trinkgeld || 0).toFixed(2) + ' €';
+                    left.appendChild(tipSpan);
                 }
 
-                const fahrtSpan = document.createElement('span');
-                fahrtSpan.textContent = '· ' + t('fareLabel') + ': ' + (f.verguetung || 0).toFixed(2) + ' €';
-                left.appendChild(fahrtSpan);
+                const fareSpan = document.createElement('span');
+                fareSpan.textContent = '· ' + t('fareLabel') + ': ' + (f.verguetung || 0).toFixed(2) + ' €';
+                left.appendChild(fareSpan);
 
                 const right = document.createElement('div');
                 right.className = 'fahrt-meta-right';
@@ -1795,6 +2236,7 @@
             else nettoAuszahlungSpan.classList.add('summary-red');
         }
 
+        // PDF (unverändert)
         function exportToPdf() {
             if (!window.jspdf) {
                 alert('PDF-Export ist aktuell nicht verfügbar (jsPDF nicht geladen).');
@@ -1967,10 +2409,7 @@
             });
 
             y += 4;
-            if (y > 280) {
-                doc.addPage();
-                y = 20;
-            }
+            if (y > 280) { doc.addPage(); y = 20; }
 
             doc.setFontSize(9);
             doc.setTextColor(colorDark.r, colorDark.g, colorDark.b);
@@ -1989,7 +2428,7 @@
             doc.save(fileName);
         }
 
-        // Update / Badge
+        // Update + badge
         function showUpdateNotification(newVersion) {
             const box = document.getElementById('updateNotice');
             if (!box) return;
@@ -1998,7 +2437,7 @@
             <strong>Neue Version verfügbar:</strong> ${newVersion}<br>
             <button id="updateNowBtn"
               style="margin-top:6px; padding:6px 12px; border-radius:999px;
-                     border:none; background:#2563eb; color:white; cursor:pointer; font-weight:600;">
+                     border:none; background:#2563eb; color:white; cursor:pointer; font-weight:700;">
               Jetzt aktualisieren
             </button>
           `;
@@ -2007,7 +2446,9 @@
             const badge = document.getElementById('updateBadge');
             if (badge) badge.style.display = 'inline-flex';
 
-            document.getElementById('updateNowBtn').onclick = () => { location.reload(true); };
+            document.getElementById('updateNowBtn').onclick = () => {
+                location.reload(true);
+            };
         }
 
         async function checkForUpdate() {
@@ -2044,10 +2485,9 @@
             }
         }
 
-        // ✅ Neues Feature: Reset-Prompt, wenn heute > Datum der letzten Fahrt
+        // Reset prompt on new day
         function getLatestEntryDateLocal() {
             if (!fahrten || fahrten.length === 0) return null;
-
             let latest = null;
             for (const f of fahrten) {
                 const d = f && f.createdAt ? new Date(f.createdAt) : null;
@@ -2064,24 +2504,19 @@
             if (!latestDate) return;
 
             const today = new Date();
-
             const latestDay = startOfLocalDay(latestDate).getTime();
             const todayDay = startOfLocalDay(today).getTime();
 
-            // nur wenn heute wirklich neuer ist als letzter Eintrag
             if (todayDay <= latestDay) return;
 
-            // nicht mehrfach am selben Tag nerven
             const todayKey = localYMD(today);
             try {
                 const shownFor = localStorage.getItem(RESET_PROMPT_SHOWN_TODAY_KEY);
                 if (shownFor === todayKey) return;
             } catch (e) { }
 
-            // markiere als "heute gezeigt"
             try { localStorage.setItem(RESET_PROMPT_SHOWN_TODAY_KEY, todayKey); } catch (e) { }
 
-            // texts (falls Sprache gewechselt wurde)
             resetPromptTitle.textContent = t('resetPromptTitle');
             resetPromptText.textContent = t('resetPromptText');
             resetPromptLater.textContent = t('resetPromptLater');
@@ -2090,12 +2525,11 @@
             resetPromptModal.style.display = 'flex';
         }
 
-        function closeResetPrompt() {
-            resetPromptModal.style.display = 'none';
-        }
+        function closeResetPrompt() { resetPromptModal.style.display = 'none'; }
 
-        resetPromptLater.addEventListener('click', closeResetPrompt);
+        resetPromptLater.addEventListener('click', () => { hapticLight(); closeResetPrompt(); });
         resetPromptNow.addEventListener('click', () => {
+            hapticLight();
             closeResetPrompt();
             resetAllData();
             showToast(t('btnReset'));
@@ -2105,16 +2539,15 @@
             if (e.target === resetPromptModal) closeResetPrompt();
         });
 
-        // init
+        // Init
         initTheme();
         initLanguage();
         loadState();
         renderFahrten();
         berechneZusammenfassung();
         zahlungsartSelect.dispatchEvent(new Event('change'));
+        syncQuickKmActiveFromInput();
         checkForUpdate();
-
-        // Nach dem Laden + Rendern prompten (falls nötig)
         maybePromptResetForNewDay();
     </script>
 </body>
